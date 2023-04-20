@@ -1,7 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using project_backend.Data;
 using project_backend.Interfaces;
 using project_backend.Models;
@@ -10,70 +7,81 @@ namespace project_backend.Services
 {
     public class TableService : ITableRestaurant
     {
-        private readonly CommandsContext _commandsContext;
-        public TableService(CommandsContext commandsContext) 
-        { 
-            _commandsContext = commandsContext;
+        private readonly CommandsContext _context;
+
+        public TableService(CommandsContext context)
+        {
+            _context = context;
         }
 
-        public async Task<bool> createTable(TableRestaurant table)
+        public async Task<bool> CreateTable(TableRestaurant table)
         {
             bool result = false;
+
             try
             {
-                _commandsContext.TableRestaurant.Add(table);
-                await _commandsContext.SaveChangesAsync();
+                _context.TableRestaurant.Add(table);
+                await _context.SaveChangesAsync();
+
                 result = true;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
             }
-            return result;
 
+            return result;
         }
 
-        public async Task<bool> DeleteStateTable(TableRestaurant table)
+        public async Task<bool> DeleteTable(TableRestaurant table)
         {
             bool result = false;
+
             try
             {
-                _commandsContext.TableRestaurant.Remove(table);
-                await _commandsContext.SaveChangesAsync();
+                _context.TableRestaurant.Remove(table);
+                await _context.SaveChangesAsync();
+
                 result = true;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
             }
+
             return result;
         }
 
-        public async Task<TableRestaurant> GetTableById(int id)
+        public async Task<TableRestaurant> GetById(int id)
         {
-            TableRestaurant tableRestaurant = await _commandsContext.TableRestaurant.FirstOrDefaultAsync(t => t.NumTable == id);
-            return tableRestaurant;
+            var table = await _context.TableRestaurant.FirstOrDefaultAsync(t => t.NumTable == id);
+
+            return table;
         }
 
-        public async Task<List<TableRestaurant>> GetTables()
+        public async Task<List<TableRestaurant>> GetAll()
         {
-            List<TableRestaurant> tables = await _commandsContext.TableRestaurant.ToListAsync();
+            var tables = await _context.TableRestaurant.ToListAsync();
+
             return tables;
         }
 
-        public async Task<bool> UpdateStateTable(TableRestaurant tableUpdate)
+        public async Task<bool> UpdateTable(TableRestaurant tableUpdate)
         {
             bool result = false;
+
             try
             {
-                _commandsContext.Entry(tableUpdate).State = EntityState.Modified;
-                await _commandsContext.SaveChangesAsync();
+                _context.Entry(tableUpdate).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+
                 result = true;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
             }
+
             return result;
         }
     }

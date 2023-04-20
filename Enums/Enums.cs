@@ -6,16 +6,13 @@ namespace project_backend.Enums
     {
         Paid = 1,
         UnPaid = 2,
-
     }
 
     public enum TypeTableState
     {
-        [EnumMember(Value = "none")]
-        None,
-        [EnumMember(Value = "Occupied")]
+        [EnumMember(Value = "Ocupado")]
         Occupied,
-        [EnumMember(Value = "Free")]
+        [EnumMember(Value = "Libre")]
         Free,
     }
 }

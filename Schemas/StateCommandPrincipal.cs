@@ -1,6 +1,6 @@
 ﻿namespace project_backend.Schemas
 {
-    public class StateCommandSchema
+    public class StateCommandPrincipal
     {
         public string State { get; set; }
     }

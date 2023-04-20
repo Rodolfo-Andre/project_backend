@@ -1,6 +1,4 @@
-﻿using BCrypt.Net;
-
-namespace project_backend.Utils
+﻿namespace project_backend.Utils
 {
     public static class SecurityUtils
     {

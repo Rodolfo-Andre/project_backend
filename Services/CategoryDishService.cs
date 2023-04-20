@@ -1,22 +1,17 @@
 ﻿using project_backend.Interfaces;
 using project_backend.Models;
-using System.Windows.Input;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using project_backend.Data;
-using Mapster;
-using project_backend.Schemas.project_backend.Schemas;
 
 namespace project_backend.Services
 {
     public class CategoryDishService : ICategoryDish
     {
-        private readonly CommandsContext _CategoryDishContext;
+        private readonly CommandsContext _context;
 
-        public CategoryDishService(CommandsContext commandsContext)
+        public CategoryDishService(CommandsContext context)
         {
-            _CategoryDishContext = commandsContext;
-
+            _context = context;
         }
 
         public async Task<bool> CreateCategoryDish(CategoryDish categoryDish)
@@ -25,57 +20,55 @@ namespace project_backend.Services
 
             try
             {
-                var listaCatDIsh = await _CategoryDishContext.CategoryDish.ToListAsync();
+                var listCategoryDish = await _context.CategoryDish.ToListAsync();
 
-                categoryDish.Id = CategoryDish.GenerarIdCatDish(listaCatDIsh);
+                categoryDish.Id = CategoryDish.GenerateId(listCategoryDish);
+                _context.CategoryDish.Add(categoryDish);
+                await _context.SaveChangesAsync();
 
-                _CategoryDishContext.CategoryDish.Add(categoryDish);
-                await _CategoryDishContext.SaveChangesAsync();
                 result = true;
             }
             catch (Exception ex)
-            { 
+            {
                 Console.WriteLine(ex);
-            
             }
 
             return result;
-
-
-
         }
 
         public async Task<bool> DeteleCategoryDish(CategoryDish categoryDish)
         {
             bool result = false;
+
             try
             {
-                _CategoryDishContext.CategoryDish.Remove(categoryDish);
-                await _CategoryDishContext.SaveChangesAsync();
+                _context.CategoryDish.Remove(categoryDish);
+                await _context.SaveChangesAsync();
+
                 result = true;
-            
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
             }
+
             return result;
         }
 
-        public async Task<List<CategoryDish>> GetCategoryDishs()
+        public async Task<List<CategoryDish>> GetAll()
         {
-           List<CategoryDish> categoryDishes = await _CategoryDishContext.CategoryDish
-                .ToListAsync();
+            List<CategoryDish> categoryDishes = await _context.CategoryDish
+                 .ToListAsync();
 
             return categoryDishes;
         }
 
-        public async Task<CategoryDish> GetCategoryDish(string id)
+        public async Task<CategoryDish> GetById(string id)
         {
-            var categoryDish = (await _CategoryDishContext.CategoryDish
-                 .FirstOrDefaultAsync(cd => cd.Id == id));
-                
-            return categoryDish;    
+            var categoryDish = await _context.CategoryDish
+                 .FirstOrDefaultAsync(c => c.Id == id);
+
+            return categoryDish;
         }
 
         public async Task<bool> UpdateCategoryDish(CategoryDish categoryDish)
@@ -83,15 +76,17 @@ namespace project_backend.Services
             bool result = false;
 
             try
-            { 
-                _CategoryDishContext.Entry(categoryDish).State = EntityState.Modified;
-                await _CategoryDishContext.SaveChangesAsync();
+            {
+                _context.Entry(categoryDish).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+
                 result = true;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
             }
+
             return result;
         }
     }

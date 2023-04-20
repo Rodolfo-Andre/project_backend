@@ -1,13 +1,8 @@
 ﻿using Mapster;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using project_backend.Data;
 using project_backend.Interfaces;
 using project_backend.Models;
 using project_backend.Schemas;
-using project_backend.Services;
-using System.Drawing;
 
 namespace project_backend.Controllers
 {
@@ -15,100 +10,88 @@ namespace project_backend.Controllers
     [ApiController]
     public class PayMethodController : ControllerBase
     {
+        private readonly IPayMethod _payMethodService;
 
-        private readonly IPayMethod _context;
-        public PayMethodController(IPayMethod context)
+        public PayMethodController(IPayMethod payMethodService)
         {
-            _context = context;
+            _payMethodService = payMethodService;
         }
+
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<PayMethodGet>>> getAll()
+        public async Task<ActionResult<IEnumerable<PayMethodGet>>> GetPaymethod()
         {
-            List<PayMethodGet> listaPaymethod = await _context.getPayMethods();
-
-            return listaPaymethod;
+            return Ok((await _payMethodService.GetAll()).Adapt<List<PayMethodGet>>());
         }
+
         [HttpGet("{id}")]
-        public async Task<ActionResult<PayMethod>> getPaymethod(int id)
+        public async Task<ActionResult<PayMethodGet>> GetPaymethod(int id)
         {
-            var Paymethodservice = await _context.getPayMethod(id);
-
-            if (Paymethodservice == null)
-            {
-
-                return NotFound("No se encuentra el metodo de pago");
-
-            }
-
-
-            return Paymethodservice;
-
-        }
-
-        [HttpPost]
-
-        public async Task<ActionResult> Create(PayMethodDefault payMethodCreate)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
-
-            var newPayMethod = payMethodCreate.Adapt<PayMethod>();
-
-            await _context.createPaymethod(newPayMethod);
-
-            return Ok(payMethodCreate)
-
-;
-        }
-
-        [HttpPut("{id}")]
-
-        public async Task<ActionResult<PayMethodGet>> Update(int id, PayMethodDefault payMethodUpdate)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
-
-
-            var payMethod = await _context.getPayMethod(id);
+            var payMethod = await _payMethodService.GetById(id);
 
             if (payMethod == null)
             {
-                return BadRequest("El metodo de pago no existe");
+                return NotFound("Método de Pago no encontrado");
+            }
+
+            var payMethodGet = payMethod.Adapt<PayMethodGet>();
+
+            return Ok(payMethodGet);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<PayMethodGet>> CreatePaymethod([FromBody] PayMethodPrincipal payMethod)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var newPayMethod = payMethod.Adapt<PayMethod>();
+
+            await _payMethodService.CreatePaymethod(newPayMethod);
+
+            var getPayMethod = (await _payMethodService.GetById(newPayMethod.Id)).Adapt<PayMethodGet>();
+
+            return CreatedAtAction(nameof(GetPaymethod), new { id = getPayMethod.Id }, getPayMethod);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult<PayMethodGet>> UpdatePaymethod(int id, [FromBody] PayMethodPrincipal payMethodUpdate)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var payMethod = await _payMethodService.GetById(id);
+
+            if (payMethod == null)
+            {
+                return NotFound("Método de Pago no encontrado");
             }
 
             payMethod.Paymethod = payMethodUpdate.Paymethod;
 
-            await _context.updatePaymethod(payMethod);
+            await _payMethodService.UpdatePaymethod(payMethod);
 
-            PayMethodGet payMethodGet = payMethod.Adapt<PayMethodGet>();
+            var getPaymethod = (await _payMethodService.GetById(id)).Adapt<PayMethodGet>();
 
-
-
-            return Ok(payMethod);
-
-
-
+            return Ok(getPaymethod);
         }
 
         [HttpDelete("{id}")]
-
-        public async Task<ActionResult> Delete([FromRoute] int id)
+        public async Task<ActionResult> DeletePaymethod(int id)
         {
+            var payMethod = await _payMethodService.GetById(id);
 
-            var payMethod = await _context.getPayMethod(id);
             if (payMethod == null)
             {
-                return NotFound();
+                return NotFound("Método de Pago no encontrado");
             }
-            await _context.deletePaymethod(payMethod);
 
-            return Ok();
+            await _payMethodService.DeletePaymethod(payMethod);
+
+            return NoContent();
         }
     }
-
-
 }

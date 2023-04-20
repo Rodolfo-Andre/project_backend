@@ -1,9 +1,7 @@
-﻿using Mapster;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using project_backend.Data;
 using project_backend.Interfaces;
 using project_backend.Models;
-using project_backend.Schemas;
 
 namespace project_backend.Services
 {
@@ -13,73 +11,80 @@ namespace project_backend.Services
 
         public VoucherDetailServices(CommandsContext context)
         {
-            this._context = context;
+            _context = context;
         }
 
-        public async Task<int> Create(VoucherDetail voucher)
+        public async Task<bool> CreateVoucherDetail(VoucherDetail voucherDetail)
         {
-            int result = -1;
+            bool result = false;
 
             try
             {
-                _context.VoucherDetail.Add(voucher);
-                result = await _context.SaveChangesAsync();
+                _context.VoucherDetail.Add(voucherDetail);
+                await _context.SaveChangesAsync();
 
+                result = true;
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
-
+                Console.WriteLine(ex);
             }
 
             return result;
         }
 
-        public async Task<int> Delete(int id)
+        public async Task<bool> DeleteVoucherDetail(VoucherDetail voucherDetail)
         {
-            int result = -1;
+            bool result = false;
 
             try
             {
-                VoucherDetail voucherDetail = await getVoucherById(id);
-                if (voucherDetail != null)
-                {
-                    _context.VoucherDetail.Remove(voucherDetail);
-                    result = await _context.SaveChangesAsync();
-                }
+                _context.VoucherDetail.Remove(voucherDetail);
+                await _context.SaveChangesAsync();
+
+                result = true;
+
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                Console.WriteLine(ex);
             }
+
             return result;
         }
 
-        public async Task<List<VoucherDetailGet>> getAll()
+        public async Task<List<VoucherDetail>> GetAll()
         {
-            return await _context.VoucherDetail.Include(x => x.PayMethod).Include(x => x.Voucher).Select(x => x.Adapt<VoucherDetailGet>()).ToListAsync();
+            return await _context.VoucherDetail
+                .Include(x => x.PayMethod)
+                .Include(x => x.Voucher)
+                .ToListAsync();
         }
 
-        public async Task<VoucherDetail> getVoucherById(int id)
+        public async Task<VoucherDetail> GetById(int id)
         {
-            VoucherDetail voucherDetail = await _context.VoucherDetail.Include(x => x.PayMethod).Include(x => x.Voucher).FirstOrDefaultAsync(x => x.Id == id);
+            VoucherDetail voucherDetail = await _context.VoucherDetail
+                .Include(x => x.PayMethod)
+                .Include(x => x.Voucher)
+                .FirstOrDefaultAsync(x => x.Id == id);
+
             return voucherDetail;
         }
 
-        public async Task<int> Update(VoucherDetail voucher)
+        public async Task<bool> UpdateVoucherDetail(VoucherDetail voucherDetail)
         {
-            int result = -1;
+            bool result = false;
 
             try
             {
-                _context.VoucherDetail.Update(voucher);
-                result = await _context.SaveChangesAsync();
+                _context.Entry(voucherDetail).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
 
+                result = true;
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
-
+                Console.WriteLine(ex);
             }
 
             return result;

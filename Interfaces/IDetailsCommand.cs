@@ -4,11 +4,11 @@ namespace project_backend.Interfaces
 {
     public interface IDetailsCommand
     {
-        Task<List<DetailsComand>> getAllDetailsCommands();
-        Task<List<DetailsComand>> GetDetailsComandsByNumCommand(int idCommand);
-        Task<DetailsComand> GetDetailsCommand(int idCommand, string idDish);
-        Task<bool> createDetailCommand(DetailsComand dc);
-        Task<bool> deleteDetailCommand(DetailsComand dc);
-        Task<bool> updateDetailCommand(DetailsComand dc);
+        public Task<List<DetailsComand>> GetAll();
+        public Task<List<DetailsComand>> GetByCommandId(int idCommand);
+        public Task<DetailsComand> GetByCommandIdAndDishId(int idCommand, string idDish);
+        public Task<bool> CreateDetailCommand(DetailsComand detailsCommand);
+        public Task<bool> DeleteDetailCommand(DetailsComand detailsCommand);
+        public Task<bool> UpdateDetailCommand(DetailsComand detailsCommand);
     }
 }

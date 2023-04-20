@@ -4,11 +4,10 @@ namespace project_backend.Interfaces
 {
     public interface ICommands
     {
-        //Parte Gary
-        Task<List<Commands>> getCommands();
-        Task<Commands> getComand(int id);
-        Task<bool> createCommand(Commands command);
-        Task<bool> deleteCommand(Commands command);
-        Task<bool> updateCommand(Commands command);
+        public Task<List<Commands>> GetAll();
+        public Task<Commands> GetById(int id);
+        public Task<bool> CreateCommand(Commands command);
+        public Task<bool> DeleteCommand(Commands command);
+        public Task<bool> UpdateCommand(Commands command);
     }
 }

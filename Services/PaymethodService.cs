@@ -1,105 +1,87 @@
-﻿using Mapster;
-using Microsoft.CodeAnalysis.Differencing;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+﻿using Microsoft.EntityFrameworkCore;
 using project_backend.Data;
 using project_backend.Interfaces;
 using project_backend.Models;
-using project_backend.Schemas;
-using System.Runtime.InteropServices;
-using System.Windows.Input;
 
 namespace project_backend.Services
 {
     public class PaymethodService : IPayMethod
     {
-        private readonly CommandsContext _comandsContext;
+        private readonly CommandsContext _context;
 
-
-        public PaymethodService(CommandsContext paymethodContext)
+        public PaymethodService(CommandsContext context)
         {
-            _comandsContext = paymethodContext;
+            _context = context;
         }
 
-
-
-        public async Task<bool> createPaymethod(PayMethod payMethod)
-        {
-           bool result = false;
-
-            try {
-                _comandsContext.PayMethods.Add(payMethod);
-
-                await _comandsContext.SaveChangesAsync();
-
-            }
-            catch(Exception ex) {
-
-                result = true;
-
-                Console.WriteLine(ex);
-
-            }
-            return result;
-        }
-        public async Task<bool> updatePaymethod(PayMethod payMethod)
-        {
-            bool result=false;
-            
-            try
-            {
-                result = true;
-                _comandsContext.Entry(payMethod).State = EntityState.Modified;
-                await _comandsContext.SaveChangesAsync();
-            }
-            catch (Exception ex)
-
-            {
-              
-               Console.WriteLine(ex);   
-            }
-            return result;
-        }
-
-        public async Task<bool> deletePaymethod(PayMethod payMethod)
+        public async Task<bool> CreatePaymethod(PayMethod payMethod)
         {
             bool result = false;
+
             try
             {
-                _comandsContext.PayMethods.Remove(payMethod);
-                await _comandsContext.SaveChangesAsync();
+                _context.PayMethods.Add(payMethod);
+                await _context.SaveChangesAsync();
+
                 result = true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                
-                
                 Console.WriteLine(ex);
             }
 
             return result;
-          
         }
 
-        public async Task<PayMethod> getPayMethod(int id)
+        public async Task<bool> UpdatePaymethod(PayMethod payMethod)
         {
+            bool result = false;
 
-            var payMethod = await _comandsContext.PayMethods.FirstOrDefaultAsync(x => x.Id == id);
+            try
+            {
+                _context.Entry(payMethod).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+
+                result = true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+
+            return result;
+        }
+
+        public async Task<bool> DeletePaymethod(PayMethod payMethod)
+        {
+            bool result = false;
+
+            try
+            {
+                _context.PayMethods.Remove(payMethod);
+                await _context.SaveChangesAsync();
+
+                result = true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+
+            return result;
+        }
+
+        public async Task<PayMethod> GetById(int id)
+        {
+            var payMethod = await _context.PayMethods.FirstOrDefaultAsync(x => x.Id == id);
 
             return payMethod;
-
         }
 
-        public async Task<List<PayMethodGet>> getPayMethods()
+        public async Task<List<PayMethod>> GetAll()
         {
-            List<PayMethodGet> listPayMethod = await _comandsContext.PayMethods.Select(x => x.Adapt<PayMethodGet>()).ToListAsync();
-
-            return listPayMethod;
+            return await _context.PayMethods.ToListAsync();
         }
-
-
-
     }
-
 }
 

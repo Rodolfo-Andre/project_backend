@@ -1,25 +1,16 @@
-﻿
-using System.ComponentModel.DataAnnotations;
-
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace project_backend.Models
+﻿namespace project_backend.Models
 {
     public class Dish
     {
         public string Id { get; set; }
-
         public string NameDish { get; set; }
-
         public double PriceDish { get; set; }
-
         public string ImgDish { get; set; }
 
         public string CategoryDishId { get; set; }
-
         public CategoryDish CategoryDish { get; set; }
 
-        public static string GenerarIdDish(List<Dish> listDish)
+        public static string GenerateId(List<Dish> listDish)
         {
             if (listDish.Count == 0) return "D-001";
 

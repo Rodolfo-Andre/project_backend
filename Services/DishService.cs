@@ -1,101 +1,96 @@
 ﻿
-using Mapster;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using project_backend.Data;
 using project_backend.Interfaces;
 using project_backend.Models;
-using project_backend.Schemas;
-using System.Windows.Input;
-
 
 namespace project_backend.Services
 {
     public class DishService : IDish
-
     {
-        private readonly CommandsContext _Dishcontext;
-
+        private readonly CommandsContext _context;
 
         public DishService(CommandsContext context)
         {
-            _Dishcontext = context;
+            _context = context;
         }
 
-        public async Task<bool> CreateDish( Dish Dish)
+        public async Task<bool> CreateDish(Dish Dish)
         {
-           bool result = false;
+            bool result = false;
+
             try
             {
-                var listaDish = await _Dishcontext.Dish.ToListAsync();
+                var listDish = await _context.Dish.ToListAsync();
 
-                Dish.Id = Dish.GenerarIdDish(listaDish);
+                Dish.Id = Dish.GenerateId(listDish);
+                _context.Dish.Add(Dish);
+                await _context.SaveChangesAsync();
 
-                _Dishcontext.Dish.Add(Dish);
-                await _Dishcontext.SaveChangesAsync();
                 result = true;
-
             }
-            catch (Exception ex) 
-            { 
+            catch (Exception ex)
+            {
                 Console.WriteLine(ex);
             }
+
             return result;
         }
 
         public async Task<bool> DeteleDish(Dish Dish)
         {
             bool result = false;
-            try 
+
+            try
             {
-                _Dishcontext.Dish.Remove(Dish);
-                await _Dishcontext.SaveChangesAsync();
+                _context.Dish.Remove(Dish);
+                await _context.SaveChangesAsync();
+
                 result = true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex);
             }
+
             return result;
         }
 
-        public async Task<List<Dish>> GetDishs()
+        public async Task<List<Dish>> GetAll()
         {
-            List<Dish> dish = await _Dishcontext.Dish
-                .Include(d=>d.CategoryDish)
+            List<Dish> listDish = await _context.Dish
+                .Include(d => d.CategoryDish)
                 .ToListAsync();
 
-            
-
-            return dish;
-                
+            return listDish;
         }
 
-        public async Task<Dish> GetDish(string id)
+        public async Task<Dish> GetById(string id)
         {
-         var dish = await _Dishcontext.Dish
-                 .Include(d => d.CategoryDish)
-                .FirstOrDefaultAsync(d => d.Id == id);
+            var dish = await _context.Dish
+                    .Include(d => d.CategoryDish)
+                   .FirstOrDefaultAsync(d => d.Id == id);
+
             return dish;
         }
 
-        public async Task<bool> UpdateDish(Dish  Dish)
+        public async Task<bool> UpdateDish(Dish Dish)
         {
             bool result = false;
+
             try
-            { 
-                _Dishcontext.Entry(Dish).State = EntityState.Modified;
-                await _Dishcontext.SaveChangesAsync();
+            {
+                _context.Entry(Dish).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+
                 result = true;
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 Console.WriteLine(ex);
             }
+
             return result;
         }
-
-      
     }
 }
