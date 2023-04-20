@@ -1,17 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-
-namespace project_backend.Models
+﻿namespace project_backend.Models
 {
     public class CategoryDish
     {
         public string Id { get; set; }
-
         public string NameCatDish { get; set; }
 
         public List<Dish> Dish { get; set; }
 
-        public static string GenerarIdCatDish(List<CategoryDish> listCatDish)
+        public static string GenerateId(List<CategoryDish> listCatDish)
         {
             if (listCatDish.Count == 0) return "C-001";
 

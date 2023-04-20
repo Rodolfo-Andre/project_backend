@@ -4,13 +4,10 @@ namespace project_backend.Interfaces
 {
     public interface ITableRestaurant
     {
-
-        Task<List<TableRestaurant>> GetTables();
-        Task<TableRestaurant> GetTableById(int id);
-
-        Task<bool> createTable(TableRestaurant table);
-        Task<bool> UpdateStateTable(TableRestaurant tableUpdate);
-        Task<bool> DeleteStateTable(TableRestaurant table);
-
+        public Task<List<TableRestaurant>> GetAll();
+        public Task<TableRestaurant> GetById(int id);
+        public Task<bool> CreateTable(TableRestaurant table);
+        public Task<bool> UpdateTable(TableRestaurant table);
+        public Task<bool> DeleteTable(TableRestaurant table);
     }
 }

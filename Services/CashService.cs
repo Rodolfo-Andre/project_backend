@@ -1,97 +1,90 @@
 ﻿
-using Mapster;
-using Microsoft.CodeAnalysis.Differencing;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using project_backend.Data;
 using project_backend.Interfaces;
 using project_backend.Models;
-using project_backend.Schemas;
-using System.Runtime.InteropServices;
-using System.Windows.Input;
 
 namespace project_backend.Services
 {
     public class CashService : ICash
     {
+        private readonly CommandsContext _context;
 
-        private readonly CommandsContext _commands;
-
-        public CashService(CommandsContext cashCommand)
+        public CashService(CommandsContext context)
         {
-            _commands = cashCommand;
+            _context = context;
         }
 
-
-        public async Task<bool> createCash(Cash cash)
-        {
-           bool result=false;
-
-            try
-            {
-                result = true;
-
-                _commands.Cash.Add(cash);
-                await _commands.SaveChangesAsync();
-
-
-
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
-            return result;
-        }
-
-        public async Task<bool> deleteCash(Cash cash)
+        public async Task<bool> CreateCash(Cash cash)
         {
             bool result = false;
+
             try
             {
-                
-            
-                _commands.Cash.Remove(cash);
-                await _commands.SaveChangesAsync() ;
+                _context.Cash.Add(cash);
+                await _context.SaveChangesAsync();
+
                 result = true;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
             }
+
             return result;
         }
 
-        public async Task<List<CashSchema>> getAllCash()
+        public async Task<bool> DeleteCash(Cash cash)
         {
-            List<CashSchema> listCash = await _commands.Cash.Include(c => c.Establishment).Select(c=>c.Adapt<CashSchema>()).ToListAsync();
+            bool result = false;
+
+            try
+            {
+                _context.Cash.Remove(cash);
+                await _context.SaveChangesAsync();
+
+                result = true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+
+            return result;
+        }
+
+        public async Task<List<Cash>> GetAll()
+        {
+            List<Cash> listCash = await _context.Cash.Include(c => c.Establishment).ToListAsync();
 
             return listCash;
         }
 
-        public async Task<Cash> getCash(int id)
+        public async Task<Cash> GetById(int id)
         {
-            var cash = await _commands.Cash.Include(c => c.Establishment).FirstOrDefaultAsync(x => x.Id == id);
+            var cash = await _context.Cash.Include(c => c.Establishment)
+                .FirstOrDefaultAsync(x => x.Id == id);
 
-
-             return cash;
+            return cash;
         }
 
-        public async Task<bool> updateCash(Cash cash)
+        public async Task<bool> UpdateCash(Cash cash)
         {
-            bool resul = false;
+            bool result = false;
+
             try
             {
-                _commands.Entry(cash).State=EntityState.Modified;
-                await _commands.SaveChangesAsync();
-                
-                resul = true;
+                _context.Entry(cash).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
 
-            }catch (Exception ex)
-            {
-                Console.WriteLine($"{ex.Message}"); 
+                result = true;
             }
-            return resul;
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+
+            return result;
         }
     }
 }

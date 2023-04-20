@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using project_backend.Models;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace project_backend.Schemas
 {
@@ -29,11 +27,8 @@ namespace project_backend.Schemas
         public UserPrincipal User { get; set; }
     }
 
-    public class EmployeePut : EmployeePrincipal
+    public class EmployeeUpdate : EmployeePrincipal
     {
-        [Required(ErrorMessage = "El id del empleado es requerido")]
-        public int Id { get; set; }
-
         [Required(ErrorMessage = "El campo 'Rol' es requerido")]
         public int RoleId { get; set; }
 

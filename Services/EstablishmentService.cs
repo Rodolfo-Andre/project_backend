@@ -1,58 +1,94 @@
-﻿using Mapster;
-using Microsoft.CodeAnalysis.Differencing;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+﻿using Microsoft.EntityFrameworkCore;
 using project_backend.Data;
 using project_backend.Interfaces;
 using project_backend.Models;
-using project_backend.Schemas;
-using System.Runtime.InteropServices;
-using System.Windows.Input;
-
-
 
 namespace project_backend.Services
 {
     public class EstablishmentService : IEstablishment
     {
+        private readonly CommandsContext _context;
 
-
-        private readonly CommandsContext _commandsContext;
-
-        public EstablishmentService(CommandsContext commandsContext)
+        public EstablishmentService(CommandsContext context)
         {
-            _commandsContext = commandsContext;
+            _context = context;
         }
 
-        public async Task<Establishment> GetEstablishment(int id)
-        {
-            var payMethod = await _commandsContext.Establishment.FirstOrDefaultAsync(x => x.Id == id);
-            return payMethod;
-
-        }
-
-        public async Task<List<Establishment>> GetEstablishments()
-        {
-            List<Establishment> listEstablishment = await _commandsContext.Establishment.ToListAsync();
-            return listEstablishment;
-        }
-
-        public async Task<bool> updateEstblisment(Establishment establishment)
+        public async Task<bool> CreateEstablishment(Establishment establishment)
         {
             bool result = false;
+
             try
             {
+                _context.Establishment.Add(establishment);
+                await _context.SaveChangesAsync();
 
-
-                _commandsContext.Entry(establishment).State = EntityState.Modified;
-                await _commandsContext.SaveChangesAsync();
                 result = true;
-
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
             }
+
+            return result;
+        }
+
+        public async Task<bool> DeleteEstablishment(Establishment establishment)
+        {
+            bool result = false;
+
+            try
+            {
+                _context.Establishment.Remove(establishment);
+                await _context.SaveChangesAsync();
+
+                result = true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+
+            return result;
+        }
+
+        public async Task<List<Establishment>> GetAll()
+        {
+            var establishments = await _context.Establishment.ToListAsync();
+
+            return establishments;
+        }
+
+        public async Task<Establishment> GetById(int id)
+        {
+            var establishment = await _context.Establishment.FirstOrDefaultAsync(x => x.Id == id);
+
+            return establishment;
+        }
+
+        public async Task<Establishment> GetFirstOrDefault()
+        {
+            var establishment = await _context.Establishment.FirstOrDefaultAsync();
+
+            return establishment;
+        }
+
+        public async Task<bool> UpdateEstablishment(Establishment establishment)
+        {
+            bool result = false;
+
+            try
+            {
+                _context.Entry(establishment).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+
+                result = true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+
             return result;
         }
     }

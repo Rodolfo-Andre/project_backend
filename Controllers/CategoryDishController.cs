@@ -1,21 +1,12 @@
-﻿
-using Mapster;
-
-
+﻿using Mapster;
 using Microsoft.AspNetCore.Mvc;
-
 using project_backend.Interfaces;
 using project_backend.Models;
-
-using project_backend.Schemas.project_backend.Schemas;
-using project_backend.Services;
-using project_backend.Utils;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
-
+using project_backend.Schemas;
 
 namespace project_backend.Controllers
 {
-    [Route("api/categorydish")]
+    [Route("api/[controller]")]
     [ApiController]
     public class CategoryDishController : ControllerBase
     {
@@ -27,96 +18,79 @@ namespace project_backend.Controllers
         }
 
         [HttpGet]
-
-        public async Task<ActionResult<IEnumerable<CategoryDishGet>>> GetCategoryDishs()
+        public async Task<ActionResult<IEnumerable<CategoryDishGet>>> GetCategoryDish()
         {
-            List<CategoryDishGet> categoryDishes = (await _categoryDishService.GetCategoryDishs()).Adapt<List<CategoryDishGet>>();
-
-            return categoryDishes;
-            
+            return Ok((await _categoryDishService.GetAll()).Adapt<List<CategoryDishGet>>());
         }
 
-        [HttpGet("{Id}")]
-
-        public async Task<ActionResult<CategoryDishGet>> GetFindById(string Id)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<CategoryDishGet>> GetCategoryDish(string id)
         {
-            var catdish = await _categoryDishService.GetCategoryDish(Id);
+            var categoryDish = await _categoryDishService.GetById(id);
 
-            if (catdish == null)
+            if (categoryDish == null)
             {
-                return NotFound("No se encontro ninguna categoria");
+                return NotFound("Categoría de Plato no encontrada");
             }
 
+            var categoryDishGet = categoryDish.Adapt<CategoryDishGet>();
 
-            CategoryDishGet catDishGet = catdish.Adapt<CategoryDishGet>();
-
-            return catDishGet;
+            return Ok(categoryDishGet);
         }
 
-
-        [HttpPut("{Id}")]
-
-        public async Task<ActionResult<CategoryDishGet>> Update(string Id, [FromBody]  CategoryDishPut value)
+        [HttpPut("{id}")]
+        public async Task<ActionResult<CategoryDishGet>> UpdateCategoryDish(string id, [FromBody] CategoryDishPrincipal categoryDish)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
-
-            var updateCatDish = await _categoryDishService.GetCategoryDish(Id);
-            if (updateCatDish == null)
-            {
-                return NotFound("No se encontro ninguna categoria");
-            }
-           
-
-            updateCatDish.NameCatDish = value.NameCatDish;
-            await _categoryDishService.UpdateCategoryDish(updateCatDish);
-            var getCatDish = (await _categoryDishService.GetCategoryDish(Id)).Adapt<CategoryDishGet>();
-
-
-            return StatusCode(200, getCatDish);
-
-        }
-
-        [HttpPost]
-
-        public async Task<ActionResult<CategoryDishGet>> Create([FromBody] CategoryDishCreate categoryDish)
-        {
-
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            //CREANDO CATEGORIA PLATO
-            var newCatDish = categoryDish.Adapt<CategoryDish>();
+            var updateCategoryDish = await _categoryDishService.GetById(id);
 
-            await _categoryDishService.CreateCategoryDish(newCatDish);
+            if (updateCategoryDish == null)
+            {
+                return NotFound("Categoría de Plato no encontrada");
+            }
 
-            var getCatDish = (await _categoryDishService.GetCategoryDish(newCatDish.Id)).Adapt<CategoryDishGet>();
+            updateCategoryDish.NameCatDish = categoryDish.NameCatDish;
+            await _categoryDishService.UpdateCategoryDish(updateCategoryDish);
 
+            var getCategoryDish = (await _categoryDishService.GetById(id)).Adapt<CategoryDishGet>();
 
-            return StatusCode(201, getCatDish);
+            return Ok(getCategoryDish);
         }
 
-        [HttpDelete("{Id}")]
-        public async Task<ActionResult> Delete(string Id)
+        [HttpPost]
+        public async Task<ActionResult<CategoryDishGet>> CreateCategoryDish([FromBody] CategoryDishPrincipal categoryDish)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-            var categoryDish = await _categoryDishService.GetCategoryDish(Id);
-         
+            var newCategoryDish = categoryDish.Adapt<CategoryDish>();
+
+            await _categoryDishService.CreateCategoryDish(newCategoryDish);
+
+            var getCategoryDish = (await _categoryDishService.GetById(newCategoryDish.Id)).Adapt<CategoryDishGet>();
+
+            return CreatedAtAction(nameof(GetCategoryDish), new { id = getCategoryDish.Id }, getCategoryDish);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteCategoryDish(string id)
+        {
+            var categoryDish = await _categoryDishService.GetById(id);
+
             if (categoryDish == null)
             {
-                return BadRequest("No se encontro ninguna categoria");
+                return NotFound("Categoría de Plato no encontrada");
             }
 
             await _categoryDishService.DeteleCategoryDish(categoryDish);
+
             return NoContent();
-
-
-
         }
-
     }
 }

@@ -1,24 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Mapster;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+﻿using Mapster;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using project_backend.Data;
 using project_backend.Interfaces;
 using project_backend.Models;
 using project_backend.Schemas;
-using project_backend.Utils;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace project_backend.Controllers
 {
-    [Route("api/command")]
+    [Route("api/[controller]")]
     [ApiController]
     public class CommandController : ControllerBase
     {
@@ -28,7 +16,6 @@ namespace project_backend.Controllers
         private readonly IDish _dishService;
         //Agregar lo de platos y usuarios
 
-
         public CommandController(ICommands commandService, IDetailsCommand detailsService, ITableRestaurant tableService, IDish dishService)
         {
             _commandService = commandService;
@@ -37,67 +24,78 @@ namespace project_backend.Controllers
             _dishService = dishService;
         }
 
-
-        // GET: api/<CommandController>
         [HttpGet]
-        public async Task<IEnumerable<CommandGet>> GetCommands()
+        public async Task<ActionResult<IEnumerable<CommandGet>>> GetCommand()
         {
-            List<CommandGet> commands = (await _commandService.getCommands()).Adapt<List<CommandGet>>();
-           
-            return commands;
+            List<CommandGet> commands = (await _commandService.GetAll()).Adapt<List<CommandGet>>();
+
+            return Ok(commands);
         }
 
-        // GET api/<CommandController>/5
         [HttpGet("{id}")]
         public async Task<ActionResult<CommandGet>> GetCommand(int id)
         {
-            var command = await _commandService.getComand(id);
-            if(command == null) { return NotFound(); }
-            CommandGet commandGet = command.Adapt<CommandGet>();
+            var command = await _commandService.GetById(id);
 
-            return commandGet;
-        }
-
-        // POST api/<CommandController>
-        [HttpPost]
-        public async Task<ActionResult<Commands>> PostCommand([FromBody] CommandCreate command)
-        {
-            if(!ModelState.IsValid) { return BadRequest(ModelState); }
-            //Validar mesa
-            var table = await _tableService.GetTableById(command.TableRestaurantId);
-            if (table == null)
+            if (command == null)
             {
-                return BadRequest("No existe la mesa");
+                return NotFound("Comanda no encontrada");
             }
 
-            if(table.StateTable == "Ocupado")
+            CommandGet commandGet = command.Adapt<CommandGet>();
+
+            return Ok(commandGet);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<Commands>> CreateCommand([FromBody] CommandCreate command)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            //Validar mesa
+            var table = await _tableService.GetById(command.TableRestaurantId);
+
+            if (table == null)
+            {
+                return NotFound("Mesa no encontrada");
+            }
+
+            if (table.StateTable == "Ocupado")
             {
                 return BadRequest("Mesa ocupada, eliga otra");
             }
+
             //Creando comanda
             var newCommand = command.Adapt<Commands>();
 
-            
+            List<DetailsComand> details = new();
 
-            List<DetailsComand> detalles = new List<DetailsComand>();
             foreach (var item in command.ListDetails)
             {
-                var dish = await _dishService.GetDish(item.Dish.Id);
+                var dish = await _dishService.GetById(item.DishId);
+
                 DishGet dishGet = dish.Adapt<DishGet>();
-                if(dish == null)
+
+                if (dish == null)
                 {
-                    return NotFound($"El plato {item.Dish.Id} no existe");
+                    return NotFound($"El plato {item.DishId} no existe");
                 }
+
                 newCommand.PrecTotOrder += item.cantDish * dishGet.PriceDish;
+
                 DetailsComand newDetail = new()
                 {
                     CantDish = item.cantDish,
                     PrecDish = dish.PriceDish,
                     PrecOrder = item.cantDish * dishGet.PriceDish,
                     Observation = item.Observation,
-                    DishId = item.Dish.Id
+                    DishId = item.DishId
                 };
-                detalles.Add(newDetail);
+
+                details.Add(newDetail);
             }
             //Valores adicionales
             newCommand.StatesCommandId = 1;
@@ -105,35 +103,34 @@ namespace project_backend.Controllers
             //Rodolfo aquí me carreas pls 
             newCommand.UserId = 1;
 
+            await _commandService.CreateCommand(newCommand);
+            var getCommand = await _commandService.GetById(newCommand.Id);
 
-            await _commandService.createCommand(newCommand);
-            var getCommand = await _commandService.getComand(newCommand.Id);
             //Actualizar mesa
             table.StateTable = "Ocupado";
-            await _tableService.UpdateStateTable(table);
+            await _tableService.UpdateTable(table);
 
             //Agregamos detalles
-            foreach(var item in detalles)
+            foreach (var item in details)
             {
                 item.CommandsId = newCommand.Id;
-                await _detailsService.createDetailCommand(item);
+                await _detailsService.CreateDetailCommand(item);
             }
 
-            return StatusCode(201, getCommand);
+            return CreatedAtAction(nameof(GetCommand), new { id = getCommand.Id }, getCommand);
         }
 
-        // PUT api/<CommandController>/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> EditCommand(int id, [FromBody] CommandSchema value)
+        public async Task<ActionResult<Commands>> UpdateCommand(int id, [FromBody] CommandPrincipal value)
         {
-            if(!ModelState.IsValid) { return BadRequest(ModelState); }
-            var updateCommand = await _commandService.getComand(id);
-            if(updateCommand == null) { return NotFound(); }
+            if (!ModelState.IsValid) { return BadRequest(ModelState); }
+            var updateCommand = await _commandService.GetById(id);
+            if (updateCommand == null) { return NotFound("Comanda no encontrada"); }
 
             if (updateCommand.TableRestaurantId != value.TableRestaurantId)
             {
                 //Validar mesa
-                var newTable = await _tableService.GetTableById(value.TableRestaurantId);
+                var newTable = await _tableService.GetById(value.TableRestaurantId);
                 if (newTable == null)
                 {
                     return BadRequest("No existe la mesa");
@@ -144,42 +141,40 @@ namespace project_backend.Controllers
                     return BadRequest("Mesa ocupada, eliga otra");
                 }
                 newTable.StateTable = "Ocupado";
-                await _tableService.UpdateStateTable(newTable);
-                var tableOld = await _tableService.GetTableById(updateCommand.TableRestaurantId);
+                await _tableService.UpdateTable(newTable);
+                var tableOld = await _tableService.GetById(updateCommand.TableRestaurantId);
                 tableOld.StateTable = "Libre";
-                await _tableService.UpdateStateTable(tableOld);
+                await _tableService.UpdateTable(tableOld);
 
             }
 
             updateCommand.TableRestaurantId = value.TableRestaurantId;
             updateCommand.CantSeats = value.CantSeats;
-            await _commandService.updateCommand(updateCommand);
-            var getCommand = await _commandService.getComand(id);
-            return StatusCode(200, getCommand);
-
+            await _commandService.UpdateCommand(updateCommand);
+            var getCommand = await _commandService.GetById(id);
+            return Ok(getCommand);
         }
 
-        // DELETE api/<CommandController>/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCommand(int id)
         {
-            var command = await _commandService.getComand(id);
-            if(command == null) { return NotFound(); }
-            if(command.StatesCommandId == 2) { return BadRequest("La comanda ya fue facturada, no es posible eliminar"); }
+            var command = await _commandService.GetById(id);
+
+            if (command == null) { return NotFound("Comanda no encontrada"); }
+            if (command.StatesCommandId == 2) { return BadRequest("La comanda ya fue facturada, no es posible eliminar"); }
             //Eliminar detalles primero
-            List<DetailsComand> details = await _detailsService.GetDetailsComandsByNumCommand(command.Id);
+            List<DetailsComand> details = await _detailsService.GetByCommandId(command.Id);
             foreach (var item in details)
             {
-                await _detailsService.deleteDetailCommand(item);
+                await _detailsService.DeleteDetailCommand(item);
             }
             //Actualizar mesa
-            var tableUpdate = await _tableService.GetTableById(command.TableRestaurantId);
+            var tableUpdate = await _tableService.GetById(command.TableRestaurantId);
             tableUpdate.StateTable = "Libre";
-            await _tableService.UpdateStateTable(tableUpdate);
+            await _tableService.UpdateTable(tableUpdate);
 
-            await _commandService.deleteCommand(command);
+            await _commandService.DeleteCommand(command);
             return NoContent();
-
         }
     }
 }

@@ -1,36 +1,24 @@
-﻿using System.ComponentModel.DataAnnotations;
-
+﻿using project_backend.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace project_backend.Schemas
 {
-    public class TableSchema
+    public class TablePrincipal
     {
-
-        public int numTable { get; set; }
-
+        [Required(ErrorMessage = "El campo 'Asientos' es requerido")]
+        [Range(1, 9, ErrorMessage = "El valor de la propiedad 'Asientos' debe ser un número entero positivo no mayor a 9")]
+        public int NumSeats { get; set; }
     }
-    public class TableCreate
+
+    public class TableUpdate : TablePrincipal
     {
-        [Required(ErrorMessage = "La cantidad de asientos es requerido")]
-        [Range(1, 9, ErrorMessage = "El valor de la propiedad Numero debe ser un número entero positivo")]
-        public int numSeats { get; set; }
-
-
+        [EnumDataType(typeof(TypeTableState), ErrorMessage = "El valor proporcionado para 'Estado de Mesa' no es válido")]
+        public TypeTableState StateTable { get; set; }
     }
-    public class TableUpdate
+
+    public class TableGet : TablePrincipal
     {
-
-        [Required(ErrorMessage = "La cantidad de asientos es requerido")]
-        [Range(1, 9, ErrorMessage = "El valor de la propiedad Numero debe ser un número entero positivo")]
-        public int numSeats { get; set; }
-
-        public string StateTable { get; set; }
-
-    }
-    public class TableGet : TableSchema
-    {
-        public int numSeats { get; set; }
+        public int NumTable { get; set; }
         public string StateTable { get; set; }
     }
- 
 }

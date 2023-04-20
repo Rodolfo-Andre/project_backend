@@ -11,24 +11,29 @@ namespace project_backend.Schemas
 
         [Required(ErrorMessage = "El campo {0} es requerido")]
         public DateTime DateIssued { get; set; }
+
         [Required(ErrorMessage = "El campo {0} es requerido")]
         public int NumCom { get; set; }
+
         [Required(ErrorMessage = "El campo {0} es requerido")]
         public double TotalPrice { get; set; }
     }
-
 
     public class VoucherCreate : VoucherDefault
 
     {
         [Required(ErrorMessage = "El campo {0} es requerido")]
         public int EstablishmentId { get; set; }
+
         [Required(ErrorMessage = "El campo {0} es requerido")]
         public int VoucherTypeId { get; set; }
+
         [Required(ErrorMessage = "El campo {0} es requerido")]
         public int UserId { get; set; }
+
         [Required(ErrorMessage = "El campo {0} es requerido")]
         public int ApertureId { get; set; }
+
         [Required(ErrorMessage = "El campo {0} es requerido")]
         public int CommandId { get; set; }
 
@@ -41,12 +46,10 @@ namespace project_backend.Schemas
         public int Id { get; set; }
     }
 
-
     public class VoucherGet
     {
         public int Id { get; set; }
         public int EstablishmentId { get; set; }
-
         public string CustomerName { get; set; }
         public int VoucherTypeId { get; set; }
         public DateTime DateIssued { get; set; }
@@ -54,10 +57,8 @@ namespace project_backend.Schemas
         public int UserId { get; set; }
         public int NumCom { get; set; }
         public double TotalPrice { get; set; }
-
         public int ApertureId { get; set; }
 
         public List<VoucherDetail> VoucherDetails { get; set; }
     }
-
 }

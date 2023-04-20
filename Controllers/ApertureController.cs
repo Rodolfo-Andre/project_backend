@@ -1,7 +1,5 @@
 ﻿using Mapster;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using project_backend.Data;
 using project_backend.Interfaces;
 using project_backend.Models;
 using project_backend.Schemas;
@@ -9,36 +7,31 @@ using project_backend.Schemas;
 namespace project_backend.Controllers
 {
     [ApiController]
-    [Route("api/aperture")]
+    [Route("api/[controller]")]
     public class ApertureController : Controller
     {
+        private readonly IAperture _apertureService;
 
-        private readonly IAperture apertureServices;
-
-        public ApertureController(IAperture apertureServices)
+        public ApertureController(IAperture apertureService)
         {
-
-            this.apertureServices = apertureServices;
+            _apertureService = apertureService;
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<ApertureGet>>> getAll()
+        public async Task<ActionResult<List<ApertureGet>>> GetAperture()
         {
-            List<ApertureGet> lista = await apertureServices.getAll();
-
-            return Ok(lista);
-
+            List<ApertureGet> list = (await _apertureService.GetAll()).Adapt<List<ApertureGet>>();
+            return Ok(list);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<ApertureGet>> getFindById([FromRoute] int id)
+        public async Task<ActionResult<ApertureGet>> GetAperture(int id)
         {
-
-            Aperture aperture = await apertureServices.getApertureById(id);
+            Aperture aperture = await _apertureService.GetById(id);
 
             if (aperture == null)
             {
-                return NotFound();
+                return NotFound("Apertura no encontrada");
             }
 
             ApertureGet apertureGet = aperture.Adapt<ApertureGet>();
@@ -46,77 +39,62 @@ namespace project_backend.Controllers
             return Ok(apertureGet);
         }
 
-
         [HttpPost]
-        public async Task<ActionResult> Create(ApertureCreate aperture)
+        public async Task<ActionResult<ApertureGet>> CreateAperture([FromBody] ApertureCreate aperture)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
 
             var newAperture = aperture.Adapt<Aperture>();
 
+            await _apertureService.CreateAperture(newAperture);
 
-            int result = await apertureServices.saveAperture(newAperture);
+            var getAperture = (await _apertureService.GetById(newAperture.Id)).Adapt<ApertureGet>();
 
-            if (result == -1) return BadRequest();
-
-
-
-            return StatusCode(201, Json(new { name = "hola", }));
+            return CreatedAtAction(nameof(GetAperture), new { id = getAperture.Id }, getAperture);
         }
 
-
-
         [HttpPut("{id}")]
-        public async Task<ActionResult<ApertureGet>> Update([FromRoute] int id, ApertureCreate apertureUpdate)
+        public async Task<ActionResult<ApertureGet>> UpdateAperture(int id, [FromBody] ApertureCreate apertureUpdate)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
 
-
-            Aperture apertura = await apertureServices.getApertureById(id);
+            Aperture apertura = await _apertureService.GetById(id);
 
             if (apertura == null)
             {
-                return BadRequest();
+                return NotFound("Apertura no encontrada");
             }
 
             apertura.FecAperture = apertureUpdate.FecAperture;
             apertura.FecClose = apertureUpdate.FecClose;
             apertura.SaleToDay = apertureUpdate.SaleToDay;
 
+            await _apertureService.UpdateAperture(apertura);
 
-            int result = await apertureServices.updateAperture(apertura);
+            var getAperture = (await _apertureService.GetById(id)).Adapt<ApertureGet>();
 
-            if (result == -1) return BadRequest();
-
-            ApertureGet aperturaGet = apertura.Adapt<ApertureGet>();
-
-            return Ok(aperturaGet);
-
-
+            return Ok(getAperture);
         }
-
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
+            var aperture = await _apertureService.GetById(id);
 
-            int result = await apertureServices.deleteAperture(id);
+            if (aperture == null)
+            {
+                return NotFound("Apertura no encontrada");
+            }
 
-            if (result == -1) return BadRequest();
+            await _apertureService.DeleteAperture(aperture);
 
-            return Ok();
-
+            return NoContent();
         }
-
-
-
-
-
     }
 }

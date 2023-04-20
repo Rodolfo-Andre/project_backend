@@ -1,17 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace project_backend.Models
+﻿namespace project_backend.Models
 {
     public class User
     {
         public int Id { get; set; }
-
         public string Email { get; set; }
-
         public string Password { get; set; }
 
         public int EmployeeId { get; set; }
-
         public Employee Employee { get; set; }
 
         public static string GeneratePassword(Employee employee)

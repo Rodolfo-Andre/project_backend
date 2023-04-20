@@ -1,8 +1,5 @@
 ﻿using Mapster;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
-using project_backend.Data;
 using project_backend.Enums;
 using project_backend.Interfaces;
 using project_backend.Models;
@@ -10,121 +7,100 @@ using project_backend.Schemas;
 
 namespace project_backend.Controllers
 {
-
     [ApiController]
-    [Route("api/comprobante")]
+    [Route("api/[controller]")]
     public class VoucherController : Controller
     {
+        private readonly IVoucher _voucherService;
+        private readonly ICommands _commandService;
+        private readonly ITableRestaurant _tableService;
 
-        private readonly IVoucher _context;
-        private readonly ICommands _commandContext;
-        private readonly ITableRestaurant _commandTable;
-
-
-        public VoucherController(IVoucher context, ICommands commandsServices, ITableRestaurant _commandTable)
+        public VoucherController(IVoucher voucherService, ICommands commandService, ITableRestaurant tableService)
         {
-            this._context = context;
-            this._commandContext = commandsServices;
-            this._commandTable = _commandTable;
+            _voucherService = voucherService;
+            _commandService = commandService;
+            _tableService = tableService;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<VoucherGet>>> getAll()
+        public async Task<ActionResult<IEnumerable<VoucherGet>>> GetVoucher()
         {
-            List<VoucherGet> listVoucher = await _context.getAll();
-
+            List<VoucherGet> listVoucher = (await _voucherService.GetAll()).Adapt<List<VoucherGet>>();
 
             return Ok(listVoucher);
         }
 
-
         [HttpGet("{id}")]
-
-        public async Task<ActionResult<VoucherGet>> getById([FromRoute] int id)
+        public async Task<ActionResult<VoucherGet>> GetVoucher(int id)
         {
-
-            Voucher voucher = await _context.getVoucherById(id);
+            Voucher voucher = await _voucherService.GetById(id);
 
             if (voucher == null)
             {
-                return NotFound("No se encontro el comprobante ");
+                return NotFound("Comprobante de Pago no encontrado");
             }
 
-
             VoucherGet voucherGet = voucher.Adapt<VoucherGet>();
-
 
             return Ok(voucherGet);
         }
 
-
-
         [HttpPost]
-        public async Task<ActionResult> Create([FromBody] VoucherCreate voucherCreate)
+        public async Task<ActionResult<VoucherGet>> CreateVoucher([FromBody] VoucherCreate voucherCreate)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
 
-
-            Commands command = await _commandContext.getComand(voucherCreate.CommandId);
+            Commands command = await _commandService.GetById(voucherCreate.CommandId);
 
             if (command == null)
             {
-                return BadRequest("El Comando no exite");
+                return NotFound("Comprobante de Pago no encontrado");
             }
-
 
             if (command.StatesCommandId == (int)TypeCommandState.Paid)
             {
-                return base.BadRequest("El Comando ya fue pagado");
+                return BadRequest("El Comando ya fue pagado");
             }
 
+            TableRestaurant tableRestaurant = await _tableService.GetById(voucherCreate.TableRestaurantId);
 
-            TableRestaurant tableRestaurant = await _commandTable.GetTableById(voucherCreate.TableRestaurantId);
-
-            if (tableRestaurant is null)
+            if (tableRestaurant == null)
             {
-                return BadRequest("La mesa  no exite");
+                return NotFound("Mesa no encontrada");
             }
-
 
             tableRestaurant.StateTable = TypeTableState.Occupied.ToString();
             command.StatesCommandId = 1;
 
-            await _commandContext.updateCommand(command);
-            await _commandTable.UpdateStateTable(tableRestaurant);
-
-
+            await _commandService.UpdateCommand(command);
+            await _tableService.UpdateTable(tableRestaurant);
 
             var newVoucher = voucherCreate.Adapt<Voucher>();
 
+            await _voucherService.CreateVoucher(newVoucher);
 
+            var getVoucher = (await _voucherService.GetById(newVoucher.Id)).Adapt<VoucherGet>();
 
-            int result = await _context.saveVoucher(newVoucher);
-
-            if (result == -1) return BadRequest("No se pudo crear el comprobante");
-
-            return StatusCode(201);
+            return CreatedAtAction(nameof(GetVoucher), new { id = getVoucher.Id }, getVoucher);
         }
 
-
         [HttpPut("{id}")]
-        public async Task<ActionResult<VoucherGet>> Update([FromRoute] int id, [FromBody] VoucherCreate voucherUpdate)
+        public async Task<ActionResult<VoucherGet>> UpdateVoucher(int id, [FromBody] VoucherCreate voucherUpdate)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
 
-            Voucher voucher = await _context.getVoucherById(id);
+            Voucher voucher = await _voucherService.GetById(id);
 
             if (voucher == null)
             {
-                return BadRequest("El Comprobante no exite");
+                return NotFound("Comprobante de Pago no encontrado");
             }
-
 
             voucher.EstablishmentId = voucherUpdate.EstablishmentId;
             voucher.ApertureId = voucherUpdate.ApertureId;
@@ -135,27 +111,26 @@ namespace project_backend.Controllers
             voucher.NumCom = voucherUpdate.NumCom;
             voucher.TotalPrice = voucherUpdate.TotalPrice;
 
-            int result = await _context.updateVoucher(voucher);
-            if (result == -1) return BadRequest("No se pudo actualizar el comprobante");
+            await _voucherService.UpdateVoucher(voucher);
 
+            var getVoucher = (await _voucherService.GetById(id)).Adapt<VoucherGet>();
 
-            VoucherGet voucherGet = voucher.Adapt<VoucherGet>();
-
-            return Ok(voucherGet);
-
+            return Ok(getVoucher);
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete([FromRoute] int id)
+        public async Task<ActionResult> DeleteVoucher(int id)
         {
-            int result = await _context.deleteVoucherById(id);
+            var voucher = await _voucherService.GetById(id);
 
-            if (result == -1) return BadRequest("No se pudo eliminar el comprobante");
+            if (voucher == null)
+            {
+                return NotFound("Comprobante de pago no encontrado");
+            }
 
-            return Ok();
+            await _voucherService.DeleteVoucher(voucher);
 
+            return NoContent();
         }
-
     }
-
 }

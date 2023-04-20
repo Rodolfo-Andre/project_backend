@@ -1,16 +1,13 @@
 ﻿using project_backend.Models;
-using project_backend.Schemas;
 
 namespace project_backend.Interfaces
 {
     public interface IVoucher
     {
-        Task<List<VoucherGet>> getAll();
-        Task<Voucher> getVoucherById(int id);
-        Task<int> saveVoucher(Voucher voucher);
-
-        Task<int> updateVoucher(Voucher voucher);
-        Task<int> deleteVoucherById(int id);
-
+        public Task<List<Voucher>> GetAll();
+        public Task<Voucher> GetById(int id);
+        public Task<bool> CreateVoucher(Voucher voucher);
+        public Task<bool> UpdateVoucher(Voucher voucher);
+        public Task<bool> DeleteVoucher(Voucher voucher);
     }
 }

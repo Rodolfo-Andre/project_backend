@@ -1,111 +1,114 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Mapster;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+﻿using Mapster;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualBasic;
-using project_backend.Data;
 using project_backend.Interfaces;
 using project_backend.Models;
 using project_backend.Schemas;
-using project_backend.Services;
-using project_backend.Utils;
 
 namespace project_backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     //[Authorize(Roles = "Administrador")]
-    public class EmployeesController : ControllerBase
+    public class EmployeeController : ControllerBase
     {
         private readonly IEmployee _employeeService;
+        private readonly IRole _roleService;
 
-        public EmployeesController(IEmployee employeeService, ILogger<EmployeesController> logger)
+
+        public EmployeeController(IEmployee employeeService, IRole roleService)
         {
             _employeeService = employeeService;
+            _roleService = roleService;
         }
 
         // GET: api/Employees
         [HttpGet]
         public async Task<ActionResult<IEnumerable<EmployeeGet>>> GetEmployee()
         {
-            return (await _employeeService.GetAll()).Adapt<List<EmployeeGet>>();
+            return Ok((await _employeeService.GetAll()).Adapt<List<EmployeeGet>>());
         }
 
         // GET: api/Employees/5
         [HttpGet("{id}")]
         public async Task<ActionResult<EmployeeGet>> GetEmployee(int id)
         {
-            
             var employee = await _employeeService.GetById(id);
 
             if (employee == null)
             {
-                return NotFound();
+                return NotFound("Empleado no encontrado");
             }
 
             var employeeGet = employee.Adapt<EmployeeGet>();
 
-            return employeeGet;
+            return Ok(employeeGet);
         }
 
         // PUT: api/Employees/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<ActionResult<EmployeeGet>> PutEmployee(int id, EmployeePut employee)
+        public async Task<ActionResult<EmployeeGet>> UpdateEmployee(int id, [FromBody] EmployeeUpdate employeeUpdate)
         {
-            if (id != employee.Id)
-            {
-                return BadRequest("El id del empleado no corresponde al empleado que intentas modificar");
-            }
-
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var updateEmployee = await _employeeService.GetById(id);
+            var employee = await _employeeService.GetById(id);
 
-            if (updateEmployee == null)
+            if (employee == null)
             {
-                return NotFound();
+                return NotFound("Empleado no encontrado");
             }
 
-            updateEmployee.FirstName = employee.FirstName;
-            updateEmployee.LastName = employee.LastName;
-            updateEmployee.Phone = employee.Phone;
-            updateEmployee.User.Email = employee.User.Email;
-            updateEmployee.RoleId = employee.RoleId;
+            if (employee.RoleId != employeeUpdate.RoleId)
+            {
+                var role = await _roleService.GetById(employeeUpdate.RoleId);
 
-            await _employeeService.UpdateEmployee(updateEmployee);
+                if (role == null)
+                {
+                    return NotFound("Rol no encontrado");
+                }
 
-            var getEmployee = (await GetEmployee(employee.Id)).Value;
+                employee.RoleId = employeeUpdate.RoleId;
+            }
 
-            return StatusCode(200, getEmployee);
+            employee.FirstName = employeeUpdate.FirstName;
+            employee.LastName = employeeUpdate.LastName;
+            employee.Phone = employeeUpdate.Phone;
+            employee.User.Email = employeeUpdate.User.Email;
+
+            await _employeeService.UpdateEmployee(employee);
+
+            var getEmployee = (await _employeeService.GetById(id)).Adapt<EmployeeGet>();
+
+            return Ok(getEmployee);
         }
 
         // POST: api/Employees
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<EmployeeGet>> PostEmployee([FromBody] EmployeeCreate employee)
+        public async Task<ActionResult<EmployeeGet>> CreateEmployee([FromBody] EmployeeCreate employee)
         {
             if (!ModelState.IsValid) // Validar si el modelo es válido
             {
                 return BadRequest(ModelState); // Devolver un BadRequest con los errores de validación
             }
 
+            var role = await _roleService.GetById(employee.RoleId);
+
+            if (role == null)
+            {
+                return NotFound("Rol no encontrado");
+            }
+
             var newEmployee = employee.Adapt<Employee>();
 
             await _employeeService.CreateEmployee(newEmployee);
 
-            var getEmployee = (await GetEmployee(newEmployee.Id)).Value;
+            var getEmployee = (await _employeeService.GetById(newEmployee.Id)).Adapt<EmployeeGet>();
 
-            return StatusCode(201, getEmployee);
+            return CreatedAtAction(nameof(GetEmployee), new { id = getEmployee.Id }, getEmployee);
         }
 
         // DELETE: api/Employees/5
@@ -116,7 +119,7 @@ namespace project_backend.Controllers
 
             if (employee == null)
             {
-                return NotFound();
+                return NotFound("Empleado no encontrado");
             }
 
             await _employeeService.DeleteEmployee(employee);

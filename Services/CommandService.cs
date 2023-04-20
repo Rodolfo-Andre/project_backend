@@ -1,89 +1,94 @@
-﻿using Mapster;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+﻿using Microsoft.EntityFrameworkCore;
 using project_backend.Data;
 using project_backend.Interfaces;
 using project_backend.Models;
-using project_backend.Schemas;
-using System.Windows.Input;
 
 namespace project_backend.Services
 {
     public class CommandService : ICommands
     {
-        private readonly CommandsContext _commandsContext;
-        
+        private readonly CommandsContext _context;
 
-        public CommandService(CommandsContext commandsContext)
+
+        public CommandService(CommandsContext context)
         {
-            _commandsContext = commandsContext;
-          
-        }
-        public async Task<bool> createCommand(Commands command)
-        {
-            bool result = false;
-            try
-            {
-                _commandsContext.Commands.Add(command);
-                await _commandsContext.SaveChangesAsync();
-                result = true;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-               
-            }
-            return result;
+            _context = context;
         }
 
-        public async Task<bool> deleteCommand(Commands command)
+        public async Task<bool> CreateCommand(Commands command)
         {
             bool result = false;
+
             try
             {
-                _commandsContext.Commands.Remove(command);
-                await _commandsContext.SaveChangesAsync();
+                _context.Commands.Add(command);
+                await _context.SaveChangesAsync();
+
                 result = true;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
             }
+
             return result;
         }
 
-        public async Task<Commands> getComand(int id)
+        public async Task<bool> DeleteCommand(Commands command)
         {
-            var command = await _commandsContext.Commands
-   
+            bool result = false;
+
+            try
+            {
+                _context.Commands.Remove(command);
+                await _context.SaveChangesAsync();
+
+                result = true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+
+            return result;
+        }
+
+        public async Task<Commands> GetById(int id)
+        {
+            var command = await _context.Commands
                 .Include(c => c.DetailsComand)
                 .FirstOrDefaultAsync(c => c.Id == id);
+
             return command;
         }
 
-        public async Task<List<Commands>> getCommands()
+        public async Task<List<Commands>> GetAll()
         {
-            List<Commands> command = await _commandsContext.Commands
+            List<Commands> command = await _context.Commands
                 .Include(c => c.StatesCommand)
                 .Include(c => c.TableRestaurant)
                 .Include(c => c.DetailsComand)
                 .ToListAsync();
+
             return command;
         }
 
-        public async Task<bool> updateCommand(Commands command)
+        public async Task<bool> UpdateCommand(Commands command)
         {
             bool result = false;
+
             try
             {
-                _commandsContext.Entry(command).State = EntityState.Modified;
-                await _commandsContext.SaveChangesAsync();
+                _context.Entry(command).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+
                 result = true;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
             }
+
             return result;
         }
     }

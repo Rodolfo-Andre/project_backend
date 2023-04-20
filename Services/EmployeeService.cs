@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using project_backend.Controllers;
 using project_backend.Data;
 using project_backend.Interfaces;
 using project_backend.Models;
@@ -20,7 +19,7 @@ namespace project_backend.Services
 
         public async Task<bool> CreateEmployee(Employee employee)
         {
-            bool isOk = false;
+            bool result = false;
 
             try
             {
@@ -33,36 +32,36 @@ namespace project_backend.Services
 
                 await _context.SaveChangesAsync();
 
-                isOk = true;
+                result = true;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
             }
 
-            return isOk;
+            return result;
         }
 
         public async Task<bool> DeleteEmployee(Employee employee)
         {
-            bool isOk = false;
+            bool result = false;
 
             try
             {
                 _context.Remove(employee);
                 await _context.SaveChangesAsync();
 
-                isOk = true;
+                result = true;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
             }
 
-            return isOk;
+            return result;
         }
 
-        public async Task<IEnumerable<Employee>> GetAll()
+        public async Task<List<Employee>> GetAll()
         {
             List<Employee> employees = await _context.Employee
                 .Include(e => e.Role)
@@ -84,21 +83,21 @@ namespace project_backend.Services
 
         public async Task<bool> UpdateEmployee(Employee employee)
         {
-            bool isOk = false;
+            bool result = false;
 
             try
             {
                 _context.Entry(employee).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
 
-                isOk = true;
+                result = true;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
             }
 
-            return isOk;
+            return result;
         }
     }
 }

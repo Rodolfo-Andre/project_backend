@@ -1,15 +1,13 @@
 ﻿using project_backend.Models;
-using project_backend.Schemas;
 
 namespace project_backend.Interfaces
 {
     public interface IVoucherType
     {
-
-        Task<List<VoucherTypeGet>> getAll();
-        Task<VoucherType> getVoucherById(int id);
-        Task<int> Create(VoucherType voucher);
-        Task<int> Update(VoucherType voucher);
-        Task<int> Delete(int id);
+        public Task<List<VoucherType>> GetAll();
+        public Task<VoucherType> GetById(int id);
+        public Task<bool> CreateVoucherType(VoucherType voucherType);
+        public Task<bool> UpdateVoucherType(VoucherType voucherType);
+        public Task<bool> DeleteVoucherType(VoucherType voucherType);
     }
 }

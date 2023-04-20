@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using project_backend.Interfaces;
 using project_backend.Models;
 using project_backend.Schemas;
-using project_backend.Services;
 
 namespace project_backend.Controllers
 {
@@ -11,33 +10,29 @@ namespace project_backend.Controllers
     [Route("api/[controller]")]
     public class VoucherDetailController : Controller
     {
+        private readonly IVoucherDetail _voucherDetailService;
 
-        private readonly IVoucherDetail _voucherDetailServices;
-
-        public VoucherDetailController(IVoucherDetail voucherDetailServices)
+        public VoucherDetailController(IVoucherDetail voucherDetailService)
         {
-
-            this._voucherDetailServices = voucherDetailServices;
+            _voucherDetailService = voucherDetailService;
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<VoucherDetailGet>>> getAll()
+        public async Task<ActionResult<List<VoucherDetailGet>>> GetVoucherDetail()
         {
-            List<VoucherDetailGet> lista = await _voucherDetailServices.getAll();
+            List<VoucherDetailGet> listVoucherDetail = (await _voucherDetailService.GetAll()).Adapt<List<VoucherDetailGet>>();
 
-            return Ok(lista);
-
+            return Ok(listVoucherDetail);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<VoucherDetailGet>> getFindById([FromRoute] int id)
+        public async Task<ActionResult<VoucherDetailGet>> GetVoucherDetail(int id)
         {
-
-            VoucherDetail voucherDetail = await _voucherDetailServices.getVoucherById(id);
+            VoucherDetail voucherDetail = await _voucherDetailService.GetById(id);
 
             if (voucherDetail == null)
             {
-                return NotFound();
+                return NotFound("Detalle de Comprobante no encontrado");
             }
 
             VoucherDetailGet voucherDetailGet = voucherDetail.Adapt<VoucherDetailGet>();
@@ -45,77 +40,61 @@ namespace project_backend.Controllers
             return Ok(voucherDetailGet);
         }
 
-
         [HttpPost]
-        public async Task<ActionResult> Create(VoucherDetailCreate voucherDetailCreate)
+        public async Task<ActionResult<VoucherDetailGet>> CreateVoucherDetail([FromBody] VoucherDetailCreate voucherDetailCreate)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
 
-            VoucherDetail voucherDetail = voucherDetailCreate.Adapt<VoucherDetail>();
+            VoucherDetail newvoucherDetail = voucherDetailCreate.Adapt<VoucherDetail>();
 
+            await _voucherDetailService.CreateVoucherDetail(newvoucherDetail);
 
-            int result = await _voucherDetailServices.Create(voucherDetail);
+            var getVoucherDetailGet = (await _voucherDetailService.GetById(newvoucherDetail.Id)).Adapt<VoucherGet>();
 
-            if (result == -1) return BadRequest();
-
-
-
-            return StatusCode(201, Json(new { name = "hola", }));
+            return CreatedAtAction(nameof(GetVoucherDetail), new { id = getVoucherDetailGet.Id }, getVoucherDetailGet);
         }
 
-
-
         [HttpPut("{id}")]
-        public async Task<ActionResult<VoucherDetailGet>> Update([FromRoute] int id, VoucherDetailUpdate voucherDetailUpdate)
+        public async Task<ActionResult<VoucherDetailGet>> UpdateVoucherDetail(int id, [FromBody] VoucherDetailUpdate voucherDetailUpdate)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
 
-
-            VoucherDetail voucherDetail = await _voucherDetailServices.getVoucherById(id);
+            VoucherDetail voucherDetail = await _voucherDetailService.GetById(id);
 
             if (voucherDetail == null)
             {
-                return BadRequest();
+                return NotFound("Detalle de Comprobante no encontrado");
             }
 
             voucherDetail.PaymentAmount = voucherDetailUpdate.PaymentAmount;
             voucherDetail.PayMethodId = voucherDetailUpdate.PayMethodId;
             voucherDetail.VoucherId = voucherDetailUpdate.VoucherId;
-        
 
+            await _voucherDetailService.UpdateVoucherDetail(voucherDetail);
 
+            var getVoucherDetailGet = (await _voucherDetailService.GetById(id)).Adapt<VoucherGet>();
 
-            int result = await _voucherDetailServices.Update(voucherDetail);
-
-            if (result == -1) return BadRequest();
-
-            VoucherDetailGet voucherDetailGet = voucherDetail.Adapt<VoucherDetailGet>();
-
-            return Ok(voucherDetailGet);
-
-
+            return Ok(getVoucherDetailGet);
         }
-
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(int id)
+        public async Task<ActionResult> DeleteVoucherDetail(int id)
         {
+            var voucherDetail = await _voucherDetailService.GetById(id);
 
-            int result = await _voucherDetailServices.Delete(id);
+            if (voucherDetail == null)
+            {
+                return NotFound("Detalle de Comprobante no encontrado");
+            }
+            await _voucherDetailService.DeleteVoucherDetail(voucherDetail);
 
-            if (result == -1) return BadRequest();
-
-            return Ok();
-
+            return NoContent();
         }
-
-
-
     }
 }

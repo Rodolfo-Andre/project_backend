@@ -1,9 +1,7 @@
-﻿using Mapster;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using project_backend.Data;
 using project_backend.Interfaces;
 using project_backend.Models;
-using project_backend.Schemas;
 
 namespace project_backend.Services
 {
@@ -13,81 +11,85 @@ namespace project_backend.Services
 
         public VoucherServices(CommandsContext context)
         {
-            this._context = context;
-        }
-        public async Task<List<VoucherGet>> getAll()
-        {
-            return await _context.Voucher.Include(x => x.User).Include(x => x.Aperture).Include(x => x.VoucherType).Include(x => x.Establishment).Include(x => x.VoucherDetails).Select(e => e.Adapt<VoucherGet>()).ToListAsync();
+            _context = context;
         }
 
-        public async Task<Voucher> getVoucherById(int id)
+        public async Task<List<Voucher>> GetAll()
         {
-            Voucher voucher = await _context.Voucher.Include(x => x.User).Include(x => x.Aperture).Include(x => x.VoucherType).Include(x => x.Establishment).Include(x => x.VoucherDetails).FirstOrDefaultAsync(x => x.Id == id);
-
-            return voucher.Adapt<Voucher>();
+            return await _context.Voucher
+                .Include(x => x.User)
+                .Include(x => x.Aperture)
+                .Include(x => x.VoucherType)
+                .Include(x => x.Establishment)
+                .Include(x => x.VoucherDetails)
+                .ToListAsync();
         }
 
-        public async Task<int> saveVoucher(Voucher voucher)
+        public async Task<Voucher> GetById(int id)
         {
-            int result = -1;
+            Voucher voucher = await _context.Voucher
+                .Include(x => x.User)
+                .Include(x => x.Aperture)
+                .Include(x => x.VoucherType)
+                .Include(x => x.Establishment)
+                .Include(x => x.VoucherDetails)
+                .FirstOrDefaultAsync(x => x.Id == id);
 
+            return voucher;
+        }
+
+        public async Task<bool> CreateVoucher(Voucher voucher)
+        {
+            bool result = false;
 
             try
             {
                 _context.Voucher.Add(voucher);
-                result = await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
+
+                result = true;
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
-
-
+                Console.WriteLine(ex);
             }
 
             return result;
         }
 
-        public async Task<int> updateVoucher(Voucher voucher)
+        public async Task<bool> UpdateVoucher(Voucher voucher)
         {
-            int result = -1;
-
+            bool result = false;
 
             try
             {
-                _context.Voucher.Update(voucher);
-                result = await _context.SaveChangesAsync();
+                _context.Entry(voucher).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+
+                result = true;
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
-
-
+                Console.WriteLine(ex);
             }
 
             return result;
         }
 
-        public async Task<int> deleteVoucherById(int id)
+        public async Task<bool> DeleteVoucher(Voucher voucher)
         {
-            int result = -1;
-
-            Voucher voucher = await getVoucherById(id);
-
-            if (voucher is null)
-            {
-                return result;
-            }
+            bool result = false;
 
             try
             {
                 _context.Voucher.Remove(voucher);
-                result = await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
+
+                result = true;
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
-
-
+                Console.WriteLine(ex);
             }
 
             return result;

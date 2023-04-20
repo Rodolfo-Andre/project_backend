@@ -3,41 +3,36 @@ using Microsoft.AspNetCore.Mvc;
 using project_backend.Interfaces;
 using project_backend.Models;
 using project_backend.Schemas;
-using project_backend.Services;
 
 namespace project_backend.Controllers
 {
     [ApiController]
-    [Route("api/voucherType")]
-
+    [Route("api/[controller]")]
     public class VoucherTypeController : Controller
     {
-        private readonly IVoucherType voucherTypeServices;
+        private readonly IVoucherType _voucherTypeService;
 
-        public VoucherTypeController(IVoucherType _voucherTypeServices)
+        public VoucherTypeController(IVoucherType voucherTypeService)
         {
-
-            this.voucherTypeServices = _voucherTypeServices;
+            _voucherTypeService = voucherTypeService;
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<VoucherTypeGet>>> getAll()
+        public async Task<ActionResult<List<VoucherTypeGet>>> GetVoucherType()
         {
-            List<VoucherTypeGet> lista = await voucherTypeServices.getAll();
+            List<VoucherTypeGet> listVoucherType = (await _voucherTypeService.GetAll()).Adapt<List<VoucherTypeGet>>();
 
-            return Ok(lista);
-
+            return Ok(listVoucherType);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<VoucherTypeGet>> getFindById([FromRoute] int id)
+        public async Task<ActionResult<VoucherTypeGet>> GetVoucherType(int id)
         {
-
-            VoucherType voucherType = await voucherTypeServices.getVoucherById(id);
+            VoucherType voucherType = await _voucherTypeService.GetById(id);
 
             if (voucherType == null)
             {
-                return NotFound();
+                return NotFound("Tipo de Comprobante no encontrado");
             }
 
             VoucherTypeGet voucherTypeGet = voucherType.Adapt<VoucherTypeGet>();
@@ -45,71 +40,59 @@ namespace project_backend.Controllers
             return Ok(voucherTypeGet);
         }
 
-
         [HttpPost]
-        public async Task<ActionResult> Create(VoucherTypeCreate voucherType)
+        public async Task<ActionResult<VoucherTypeGet>> CreateVoucherType([FromBody] VoucherTypePrincipal voucherType)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
 
-            VoucherType v = voucherType.Adapt<VoucherType>();
+            VoucherType newVoucherType = voucherType.Adapt<VoucherType>();
 
+            await _voucherTypeService.CreateVoucherType(newVoucherType);
 
-            int result = await voucherTypeServices.Create(v);
+            var voucherTypeGet = (await _voucherTypeService.GetById(newVoucherType.Id)).Adapt<VoucherTypeGet>();
 
-            if (result == -1) return BadRequest();
-
-
-
-            return StatusCode(201);
+            return CreatedAtAction(nameof(GetVoucherType), new { id = voucherTypeGet.Id }, voucherTypeGet);
         }
 
-
-
         [HttpPut("{id}")]
-        public async Task<ActionResult<VoucherTypeGet>> Update([FromRoute] int id, VoucherTypeUpdate voucherUpdate)
+        public async Task<ActionResult<VoucherTypeGet>> UpdateVoucherType(int id, [FromBody] VoucherTypePrincipal voucherUpdate)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
 
-
-            VoucherType voucherType = await voucherTypeServices.getVoucherById(id);
+            VoucherType voucherType = await _voucherTypeService.GetById(id);
 
             if (voucherType == null)
             {
-                return BadRequest();
+                return NotFound("Tipo de Comprobante no encontrado");
             }
 
             voucherType.Name = voucherUpdate.Name;
 
+            await _voucherTypeService.UpdateVoucherType(voucherType);
 
-
-            int result = await voucherTypeServices.Update(voucherType);
-
-            if (result == -1) return BadRequest();
-
-            VoucherTypeGet voucherTypeGet = voucherType.Adapt<VoucherTypeGet>();
+            var voucherTypeGet = (await _voucherTypeService.GetById(id)).Adapt<VoucherTypeGet>();
 
             return Ok(voucherTypeGet);
-
-
         }
 
-
         [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(int id)
+        public async Task<ActionResult> DeleteVoucherType(int id)
         {
+            var voucherType = await _voucherTypeService.GetById(id);
 
-            int result = await voucherTypeServices.Delete(id);
+            if (voucherType == null)
+            {
+                return NotFound("Tipo de Comprobante no encontrado");
+            }
+            await _voucherTypeService.DeleteVoucherType(voucherType);
 
-            if (result == -1) return BadRequest();
-
-            return Ok();
-
+            return NoContent();
         }
     }
 }

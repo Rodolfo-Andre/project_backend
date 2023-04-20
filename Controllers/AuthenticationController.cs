@@ -1,9 +1,7 @@
 ﻿using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using project_backend.Data;
 using project_backend.Interfaces;
 using project_backend.Models;
 using project_backend.Schemas;
@@ -44,7 +42,7 @@ namespace project_backend.Controllers
 
             if (userFromBD == null || !SecurityUtils.CheckPassword(userFromBD.Password, user.Password))
             {
-                return StatusCode(StatusCodes.Status401Unauthorized, new
+                return Unauthorized(new
                 {
                     message = "Correo electrónico o contraseña incorrecta"
                 });
@@ -52,7 +50,7 @@ namespace project_backend.Controllers
 
             var token = GenerateJWTToken(userFromBD);
 
-            return StatusCode(StatusCodes.Status200OK, new AuthResponse
+            return Ok(new AuthResponse
             {
                 AccessToken = token
             });
@@ -67,7 +65,7 @@ namespace project_backend.Controllers
             var id = int.Parse(identity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Sid)?.Value);
             var currentUser = (await _employeeService.GetById(id)).Adapt<EmployeeGet>();
 
-            return StatusCode(StatusCodes.Status200OK, currentUser);
+            return Ok(currentUser);
         }
 
         private string GenerateJWTToken(User user)

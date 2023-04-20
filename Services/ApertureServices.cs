@@ -1,10 +1,7 @@
-﻿using Mapster;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using project_backend.Data;
 using project_backend.Interfaces;
 using project_backend.Models;
-using project_backend.Schemas;
-using System.Collections.Generic;
 
 namespace project_backend.Services
 {
@@ -14,88 +11,81 @@ namespace project_backend.Services
 
         public ApertureServices(CommandsContext context)
         {
-            this._context = context;
+            _context = context;
         }
 
-
-
-        public async Task<List<ApertureGet>> getAll()
+        public async Task<List<Aperture>> GetAll()
         {
-
             return await _context.Aperture
-            .Include(x => x.Employee).
-            Include(x => x.Cash).
-            Select(x => x.Adapt<ApertureGet>()).
-            ToListAsync();
+            .Include(x => x.Employee)
+            .Include(x => x.Cash)
+            .ToListAsync();
         }
 
-        public async Task<Aperture> getApertureById(int id)
+        public async Task<Aperture> GetById(int id)
         {
-            Aperture aperture = await _context.Aperture.Include(x => x.Employee).
-            Include(x => x.Cash).FirstOrDefaultAsync(x => x.Id == id);
+            Aperture aperture = await _context.Aperture
+                .Include(x => x.Employee)
+                .Include(x => x.Cash)
+                .FirstOrDefaultAsync(x => x.Id == id);
+
             return aperture;
         }
 
-        public async Task<int> saveAperture(Aperture aperture)
+        public async Task<bool> CreateAperture(Aperture aperture)
         {
-            int result = -1;
+            bool result = false;
 
             try
             {
                 _context.Aperture.Add(aperture);
-                result = await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
 
+                result = true;
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
-
+                Console.WriteLine(ex);
             }
-
-            return result;
-
-        }
-
-        public async Task<int> updateAperture(Aperture aperture)
-        {
-            int result = -1;
-
-            try
-            {
-
-                _context.Aperture.Update(aperture);
-                result = await _context.SaveChangesAsync();
-
-
-
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-
-            }
-
 
             return result;
         }
 
-        public async Task<int> deleteAperture(int id)
+        public async Task<bool> UpdateAperture(Aperture aperture)
         {
-            int result = -1;
+            bool result = false;
 
             try
             {
-                Aperture aperture = await getApertureById(id);
-                if (aperture != null)
-                {
-                    _context.Aperture.Remove(aperture);
-                    result = await _context.SaveChangesAsync();
-                }
+                _context.Entry(aperture).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+
+                result = true;
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                Console.WriteLine(ex);
             }
+
+            return result;
+        }
+
+        public async Task<bool> DeleteAperture(Aperture aperture)
+        {
+            bool result = false;
+
+            try
+            {
+                _context.Aperture.Remove(aperture);
+                await _context.SaveChangesAsync();
+
+                result = true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+
             return result;
         }
     }

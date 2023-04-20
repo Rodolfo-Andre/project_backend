@@ -1,151 +1,118 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Emit;
-using System.Threading.Tasks;
-using Mapster;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+﻿using Mapster;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using project_backend.Data;
 using project_backend.Interfaces;
 using project_backend.Models;
 using project_backend.Schemas;
-using project_backend.Services;
-using project_backend.Utils;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 
 namespace project_backend.Controllers
 {
-    [Route("api/dish")]
+    [Route("api/[controller]")]
     [ApiController]
     public class DishController : ControllerBase
     {
-  
         private readonly IDish _dishService;
-        private readonly ICategoryDish _categorydishService;
-
+        private readonly ICategoryDish _categoryDishService;
 
         public DishController(IDish disService, ICategoryDish categoryDishService)
         {
             _dishService = disService;
-            _categorydishService = categoryDishService;
-
+            _categoryDishService = categoryDishService;
         }
 
         [HttpGet]
-        public async Task<IEnumerable<DishGet>> GetDishs()
+        public async Task<ActionResult<IEnumerable<DishGet>>> GetDish()
         {
-
-            List<DishGet> dish = (await _dishService.GetDishs()).Adapt<List<DishGet>>();
-
-
-            return dish;
-              
+            return Ok((await _dishService.GetAll()).Adapt<List<DishGet>>());
         }
 
-        [HttpGet("{Id}")]
-
-        public async Task<ActionResult<DishGet>> getFindById(string Id)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<DishGet>> GetDish(string id)
         {
-            var dish = await _dishService.GetDish(Id);
-            
+            var dish = await _dishService.GetById(id);
+
             if (dish == null)
             {
-                return NotFound();
+                return NotFound("Plato no encontrado");
             }
-         
 
-            DishGet dishGet = dish.Adapt<DishGet>();
-            
-            return dishGet;
+            var dishGet = dish.Adapt<DishGet>();
+
+            return Ok(dishGet);
         }
 
-        [HttpPut("{Id}")]
-
-        public async Task<IActionResult> Update(string Id, [FromBody] DishPut value )
+        [HttpPut("{id}")]
+        public async Task<ActionResult<DishGet>> UpdateDish(string id, [FromBody] DishCreateOrUpdate value)
         {
-
-        
-
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var updateDish = await _dishService.GetDish(Id);
+
+            var updateDish = await _dishService.GetById(id);
+
             if (updateDish == null)
             {
-                return NotFound("no se encontre ningun plato");
-            }
-          
-           
-            if (updateDish.CategoryDishId != value.CategoryDishId)
-            {
-                //Validar categoria de plato
-                var newCategoryDish = await _categorydishService.GetCategoryDish(value.CategoryDishId);
-                if (newCategoryDish == null)
-                {
-                    return BadRequest("No existe el tipo  de plato");
-                }
+                return NotFound("Plato no encontrado");
             }
 
+            if (updateDish.CategoryDishId != value.CategoryDishId)
+            {
+                var newCategoryDish = await _categoryDishService.GetById(value.CategoryDishId);
+
+                if (newCategoryDish == null)
+                {
+                    return NotFound("Categoría de Plato no encontrada");
+                }
+
+                updateDish.CategoryDishId = value.CategoryDishId;
+            }
 
             updateDish.NameDish = value.NameDish;
             updateDish.PriceDish = value.PriceDish;
-            updateDish.CategoryDishId = value.CategoryDishId;
             updateDish.ImgDish = value.ImgDish;
             await _dishService.UpdateDish(updateDish);
-            var getDish = (await _dishService.GetDish(Id)).Adapt<DishGet>();
 
-            return StatusCode(200, getDish);
-               
+            var getDish = (await _dishService.GetById(id)).Adapt<DishGet>();
 
+            return Ok(getDish);
         }
 
-        
-
         [HttpPost]
-        public async Task<ActionResult<DishPrincipal>> PostDish([FromBody] DishCreate dish)
+        public async Task<ActionResult<DishGet>> CreateDish([FromBody] DishCreateOrUpdate dish)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            //Validar categoria
-            var cate = await _categorydishService.GetCategoryDish(dish.CategoryDishId);
-            if (cate == null)
+
+            var categoryDish = await _categoryDishService.GetById(dish.CategoryDishId);
+
+            if (categoryDish == null)
             {
-                return BadRequest("No existe la categoria");
+                return NotFound("Categoría de Plato no encontrada");
             }
 
-            //CREANDO PLATO
             var newDish = dish.Adapt<Dish>();
-            
             await _dishService.CreateDish(newDish);
 
-            var getDish = (await _dishService.GetDish(newDish.Id)).Adapt<DishGet>();
-            return StatusCode(201, getDish);
+            var getDish = (await _dishService.GetById(newDish.Id)).Adapt<DishGet>();
+
+            return CreatedAtAction(nameof(GetDish), new { id = getDish.Id }, getDish);
         }
 
-
-        [HttpDelete("{Id}")]
-        public async Task<IActionResult> Delete(string Id)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteDish(string id)
         {
-            var dish = await _dishService.GetDish(Id);
-            if (dish == null) {
-                return NotFound();
-               
+            var dish = await _dishService.GetById(id);
+
+            if (dish == null)
+            {
+                return NotFound("Plato no encontrado");
             }
+
             await _dishService.DeteleDish(dish);
-            return NoContent();          
 
+            return NoContent();
         }
-
-
     }
 }
-        

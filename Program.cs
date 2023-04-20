@@ -1,11 +1,9 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using project_backend.Data;
 using project_backend.Interfaces;
-using project_backend.Models;
 using project_backend.Services;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -32,15 +30,19 @@ builder.Services.AddScoped<IVoucherType, VoucherTypeServices>();
 builder.Services.AddScoped<IVoucherDetail, VoucherDetailServices>();
 
 // Add services to the container.
-builder.Services.AddControllers()
+builder.Services
+    .AddControllers()
+    .AddNewtonsoftJson(options =>
+         options.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter())
+    )
     .AddJsonOptions(options =>
-{
-    // Que ignore la referencias circulares
-    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    {
+        // Que ignore la referencias circulares
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
 
-    // Incluir identaci�n
-    options.JsonSerializerOptions.WriteIndented = true;
-});
+        // Incluir identaci�n
+        options.JsonSerializerOptions.WriteIndented = true;
+    });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -95,7 +97,6 @@ builder.Services.AddCors(options => options.AddPolicy("CorsPolicy",
     }
 ));
 
-
 // Se a�ade una autenticaci�n con el esquema 'Bearer'
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -122,7 +123,6 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-
 }
 
 app.UseHttpsRedirection();
