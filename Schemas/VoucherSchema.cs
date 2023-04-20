@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace project_backend.Schemas
 {
-    public class VoucherDefault
+    public class VoucherPrincipal
     {
         [Required(ErrorMessage = "El campo {0} es requerido")]
         [StringLength(maximumLength: 30, MinimumLength = 5, ErrorMessage = "El campo {0} debe tener como minimo {2} y como maximo {1} caracteres")]
@@ -19,7 +19,7 @@ namespace project_backend.Schemas
         public double TotalPrice { get; set; }
     }
 
-    public class VoucherCreate : VoucherDefault
+    public class VoucherCreate : VoucherPrincipal
 
     {
         [Required(ErrorMessage = "El campo {0} es requerido")]

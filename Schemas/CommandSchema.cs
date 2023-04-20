@@ -16,7 +16,7 @@ namespace project_backend.Schemas
         public int Id { get; set; }
         public List<DetailCommandOrder> ListDetails { get; set; }
 
-        public StateCommandPrincipal StatesCommand { get; set; }
+        public StateCommandSchema StatesCommand { get; set; }
         public UserPrincipal User { get; set; }
         public TableGet Table { get; set; }
     }
