@@ -1,4 +1,5 @@
 ﻿using Mapster;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using project_backend.Interfaces;
 using project_backend.Models;
@@ -8,6 +9,7 @@ namespace project_backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class PayMethodController : ControllerBase
     {
         private readonly IPayMethod _payMethodService;
@@ -39,6 +41,7 @@ namespace project_backend.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Administrador")]
         public async Task<ActionResult<PayMethodGet>> CreatePaymethod([FromBody] PayMethodPrincipal payMethod)
         {
             if (!ModelState.IsValid)
@@ -56,6 +59,7 @@ namespace project_backend.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Administrador")]
         public async Task<ActionResult<PayMethodGet>> UpdatePaymethod(int id, [FromBody] PayMethodPrincipal payMethodUpdate)
         {
             if (!ModelState.IsValid)
@@ -80,6 +84,7 @@ namespace project_backend.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrador")]
         public async Task<ActionResult> DeletePaymethod(int id)
         {
             var payMethod = await _payMethodService.GetById(id);

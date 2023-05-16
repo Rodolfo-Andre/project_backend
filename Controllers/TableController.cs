@@ -5,11 +5,14 @@ using Mapster;
 using project_backend.Interfaces;
 using project_backend.Enums;
 using project_backend.Utils;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
 
 namespace project_backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class TableController : ControllerBase
     {
         private readonly ITableRestaurant _tableService;
@@ -41,6 +44,7 @@ namespace project_backend.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Administrador")]
         public async Task<ActionResult<TableGet>> CreateTable([FromBody] TablePrincipal table)
         {
             if (!ModelState.IsValid)
@@ -84,6 +88,7 @@ namespace project_backend.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> DeleteTable(int id)
         {
             var table = await _tableService.GetById(id);

@@ -1,4 +1,5 @@
 ﻿using Mapster;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using project_backend.Interfaces;
 using project_backend.Models;
@@ -8,6 +9,7 @@ namespace project_backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class RoleController : ControllerBase
     {
         public readonly IRole _roleService;
@@ -40,6 +42,7 @@ namespace project_backend.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Administrador")]
         public async Task<ActionResult<RoleGet>> CreateRole([FromBody] RolePrincipal role)
         {
             if (!ModelState.IsValid)
@@ -57,6 +60,7 @@ namespace project_backend.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Administrador")]
         public async Task<ActionResult<RoleGet>> UpdateRole(int id, [FromBody] RolePrincipal roleUpdate)
         {
             if (!ModelState.IsValid)
@@ -81,6 +85,7 @@ namespace project_backend.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrador")]
         public async Task<ActionResult> DeleteRole(int id)
         {
             var role = await _roleService.GetById(id);

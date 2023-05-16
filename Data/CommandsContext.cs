@@ -11,6 +11,22 @@ namespace project_backend.Data
         {
         }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Voucher>(entity =>
+            {
+                entity.HasOne(e => e.Establishment)
+               .WithMany()
+               .HasForeignKey(e => e.EstablishmentId)
+               .OnDelete(DeleteBehavior.NoAction);
+
+                entity.HasOne(e => e.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.NoAction);
+            });
+        }
+
         public DbSet<Employee> Employee { get; set; } = default!;
         public DbSet<User> User { get; set; } = default!;
         public DbSet<Role> Role { get; set; } = default!;

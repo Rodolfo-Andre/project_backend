@@ -125,6 +125,15 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+
+    var context = services.GetRequiredService<CommandsContext>();
+
+    DbInitializer.Initialize(context);
+}
+
 app.UseHttpsRedirection();
 
 app.UseCors("CorsPolicy");

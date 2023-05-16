@@ -3,11 +3,13 @@ using project_backend.Interfaces;
 using project_backend.Models;
 using project_backend.Schemas;
 using Mapster;
+using Microsoft.AspNetCore.Authorization;
 
 namespace project_backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class CashController : ControllerBase
     {
         private readonly ICash _cashService;

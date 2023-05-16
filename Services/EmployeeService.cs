@@ -25,7 +25,7 @@ namespace project_backend.Services
             {
                 var passwordGenerated = User.GeneratePassword(employee);
 
-                _logger.LogInformation(passwordGenerated);
+                _logger.LogInformation($"La contraseña generada es: {passwordGenerated}");
 
                 employee.User.Password = SecurityUtils.HashPassword(passwordGenerated);
                 _context.Add(employee);

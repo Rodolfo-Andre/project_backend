@@ -1,4 +1,5 @@
 ﻿using Mapster;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using project_backend.Interfaces;
 using project_backend.Models;
@@ -8,6 +9,7 @@ namespace project_backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class EstablishmentController : ControllerBase
     {
         private readonly IEstablishment _establishmentService;
@@ -46,7 +48,8 @@ namespace project_backend.Controllers
             return Ok(establishment);
         }
 
-        [HttpPut]
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Administrador")]
         public async Task<ActionResult<EstablishmentGet>> UpdateEstablishment(int id, [FromBody] EstablishmentPrincipal establishmentUpdate)
         {
             if (!ModelState.IsValid)
@@ -74,6 +77,7 @@ namespace project_backend.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Administrador")]
         public async Task<ActionResult<EstablishmentGet>> CreateEstablishment([FromBody] EstablishmentPrincipal establishment)
         {
             if (!ModelState.IsValid)
@@ -91,6 +95,7 @@ namespace project_backend.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> DeleteEstablishment(int id)
         {
             var establishment = await _establishmentService.GetById(id);

@@ -1,4 +1,5 @@
 ﻿using Mapster;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using project_backend.Interfaces;
 using project_backend.Models;
@@ -8,6 +9,7 @@ namespace project_backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class DishController : ControllerBase
     {
         private readonly IDish _dishService;
@@ -41,6 +43,7 @@ namespace project_backend.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Administrador")]
         public async Task<ActionResult<DishGet>> UpdateDish(string id, [FromBody] DishCreateOrUpdate value)
         {
             if (!ModelState.IsValid)
@@ -78,6 +81,7 @@ namespace project_backend.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Administrador")]
         public async Task<ActionResult<DishGet>> CreateDish([FromBody] DishCreateOrUpdate dish)
         {
             if (!ModelState.IsValid)
@@ -101,6 +105,7 @@ namespace project_backend.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> DeleteDish(string id)
         {
             var dish = await _dishService.GetById(id);
