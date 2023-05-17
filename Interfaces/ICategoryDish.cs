@@ -9,5 +9,6 @@ namespace project_backend.Interfaces
         public Task<bool> CreateCategoryDish(CategoryDish categoryDish);
         public Task<bool> DeteleCategoryDish(CategoryDish categoryDish);
         public Task<bool> UpdateCategoryDish(CategoryDish categoryDish);
+        public Task<int> GetNumberDishInCategoryDish(String idCategoryDish);
     }
 }

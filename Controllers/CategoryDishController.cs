@@ -97,5 +97,20 @@ namespace project_backend.Controllers
 
             return NoContent();
         }
+
+        [HttpGet("{id}/number-dish")]
+        public async Task<ActionResult<int>> GetNumberDishInCategoryDish(string id)
+        {
+            var categoryDish = await _categoryDishService.GetById(id);
+
+            if (categoryDish == null)
+            {
+                return NotFound("Categoría de Plato no encontrada");
+            }
+
+            var count = await _categoryDishService.GetNumberDishInCategoryDish(categoryDish.Id);
+
+            return Ok(count);
+        }
     }
 }

@@ -89,5 +89,15 @@ namespace project_backend.Services
 
             return result;
         }
+
+        public async Task<int> GetNumberDishInCategoryDish(String idCategoryDish)
+        {
+            var categoryDish = await _context.CategoryDish
+                .Include(c => c.Dish)
+                .Where(c => c.Id == idCategoryDish)
+                .FirstOrDefaultAsync();
+
+            return categoryDish.Dish.Count;
+        }
     }
 }
