@@ -23,13 +23,13 @@ namespace project_backend.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TableGet>>> GetTable()
+        public async Task<ActionResult<IEnumerable<TableRestaurantGet>>> GetTable()
         {
-            return Ok((await _tableService.GetAll()).Adapt<List<TableGet>>());
+            return Ok((await _tableService.GetAll()).Adapt<List<TableRestaurantGet>>());
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<TableGet>> GetTable(int id)
+        public async Task<ActionResult<TableRestaurantGet>> GetTable(int id)
         {
             var table = await _tableService.GetById(id);
 
@@ -38,14 +38,14 @@ namespace project_backend.Controllers
                 return NotFound("Mesa no encontrada");
             }
 
-            var tableGet = table.Adapt<TableGet>();
+            var TableRestaurantGet = table.Adapt<TableRestaurantGet>();
 
-            return Ok(tableGet);
+            return Ok(TableRestaurantGet);
         }
 
         [HttpPost]
         [Authorize(Roles = "Administrador")]
-        public async Task<ActionResult<TableGet>> CreateTable([FromBody] TablePrincipal table)
+        public async Task<ActionResult<TableRestaurantGet>> CreateTable([FromBody] TableRestaurantPrincipal table)
         {
             if (!ModelState.IsValid)
             {
@@ -57,13 +57,13 @@ namespace project_backend.Controllers
 
             await _tableService.CreateTable(newTable);
 
-            var getTable = (await _tableService.GetById(newTable.NumTable)).Adapt<TableGet>();
+            var getTable = (await _tableService.GetById(newTable.NumTable)).Adapt<TableRestaurantGet>();
 
             return CreatedAtAction(nameof(GetTable), new { id = getTable.NumTable }, getTable);
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<TableGet>> UpdateTable(int id, [FromBody] TableUpdate table)
+        public async Task<ActionResult<TableRestaurantGet>> UpdateTable(int id, [FromBody] TableUpdate table)
         {
             if (!ModelState.IsValid)
             {
@@ -82,7 +82,7 @@ namespace project_backend.Controllers
 
             await _tableService.UpdateTable(updateTable);
 
-            var getTable = (await _tableService.GetById(id)).Adapt<TableGet>();
+            var getTable = (await _tableService.GetById(id)).Adapt<TableRestaurantGet>();
 
             return Ok(getTable);
         }

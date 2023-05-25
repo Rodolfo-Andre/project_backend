@@ -34,7 +34,20 @@ namespace project_backend.Data
 
                 context.SaveChanges();
             }
+            if (!context.StatesCommand.Any())
+            {
+                await context.StatesCommand.AddRangeAsync(new List<StatesCommand>
+                {
+                    new StatesCommand() {
+                        State = "Generada"
+                    },
+                     new StatesCommand() {
+                        State = "Pagada"
+                    },
+                });
 
+                context.SaveChanges();
+            }
             if (!context.PayMethods.Any())
             {
                 await context.PayMethods.AddRangeAsync(new List<PayMethod>

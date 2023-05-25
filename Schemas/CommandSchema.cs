@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using project_backend.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace project_backend.Schemas
 {
@@ -11,14 +12,14 @@ namespace project_backend.Schemas
         public int CantSeats { get; set; }
     }
 
-    public class CommandGet : CommandPrincipal
+    public class CommandGet
     {
         public int Id { get; set; }
-        public List<DetailCommandOrder> ListDetails { get; set; }
+        public List<DetailCommandGetOrder> DetailsComand { get; set; }
 
         public StateCommandSchema StatesCommand { get; set; }
-        public UserPrincipal User { get; set; }
-        public TableGet Table { get; set; }
+        public UserComandGet User { get; set; }
+        public TableRestaurantGet TableRestaurant { get; set; }
     }
 
     public class CommandCreate : CommandPrincipal

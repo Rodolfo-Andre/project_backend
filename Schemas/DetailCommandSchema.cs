@@ -21,7 +21,7 @@ namespace project_backend.Schemas
 
         [Required(ErrorMessage = "El campo 'Cantidad de Platos' es requerido")]
         [Range(1, 9, ErrorMessage = "La cantidad debe ser un número entero positivo")]
-        public int cantDish { get; set; }
+        public int CantDish { get; set; }
 
         public string Observation { get; set; }
     }
@@ -29,9 +29,17 @@ namespace project_backend.Schemas
     public class DetailCommandOrder
     {
         public string DishId { get; set; }
-        public int cantDish { get; set; }
+        public int CantDish { get; set; }
         public string Observation { get; set; }
     }
+    public class DetailCommandGetOrder
+    {
+        public DishGet Dish { get; set; }
+        public int CantDish { get; set; }
+        public string Observation { get; set; }
+    }
+
+
 
     public class DetailCommandUpdate : DetailCommandPrincipal
     {

@@ -56,8 +56,12 @@ namespace project_backend.Services
         public async Task<Commands> GetById(int id)
         {
             var command = await _context.Commands
-                .Include(c => c.DetailsComand)
+                .Include(c => c.TableRestaurant)
+                .Include(c => c.User).ThenInclude(e => e.Employee)
+                .Include(c => c.StatesCommand)
+                .Include(c => c.DetailsComand).ThenInclude(d => d.Dish).ThenInclude(ca => ca.CategoryDish)
                 .FirstOrDefaultAsync(c => c.Id == id);
+
 
             return command;
         }
@@ -65,9 +69,10 @@ namespace project_backend.Services
         public async Task<List<Commands>> GetAll()
         {
             List<Commands> command = await _context.Commands
-                .Include(c => c.StatesCommand)
                 .Include(c => c.TableRestaurant)
-                .Include(c => c.DetailsComand)
+                .Include(c => c.User).ThenInclude(e => e.Employee)
+                .Include(c => c.StatesCommand)
+                .Include(c => c.DetailsComand).ThenInclude(d => d.Dish).ThenInclude(ca => ca.CategoryDish)
                 .ToListAsync();
 
             return command;

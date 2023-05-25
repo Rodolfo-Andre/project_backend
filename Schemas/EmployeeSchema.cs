@@ -45,4 +45,8 @@ namespace project_backend.Schemas
 
         public UserPrincipal User { get; set; }
     }
+    public class EmployeGetCommand : EmployeePrincipal
+    {
+        public int Id { get; set; }
+    }
 }

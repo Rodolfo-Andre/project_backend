@@ -84,13 +84,13 @@ namespace project_backend.Controllers
                     return NotFound($"El plato {item.DishId} no existe");
                 }
 
-                newCommand.PrecTotOrder += item.cantDish * dishGet.PriceDish;
+                newCommand.PrecTotOrder += item.CantDish * dishGet.PriceDish;
 
                 DetailsComand newDetail = new()
                 {
-                    CantDish = item.cantDish,
+                    CantDish = item.CantDish,
                     PrecDish = dish.PriceDish,
-                    PrecOrder = item.cantDish * dishGet.PriceDish,
+                    PrecOrder = item.CantDish * dishGet.PriceDish,
                     Observation = item.Observation,
                     DishId = item.DishId
                 };
@@ -99,12 +99,11 @@ namespace project_backend.Controllers
             }
             //Valores adicionales
             newCommand.StatesCommandId = 1;
-
+            newCommand.CantSeats = command.CantSeats;
             //Rodolfo aquí me carreas pls 
             newCommand.UserId = 1;
-
             await _commandService.CreateCommand(newCommand);
-            var getCommand = await _commandService.GetById(newCommand.Id);
+            var getCommand = (await _commandService.GetById(newCommand.Id)).Adapt<CommandGet>();
 
             //Actualizar mesa
             table.StateTable = "Ocupado";
