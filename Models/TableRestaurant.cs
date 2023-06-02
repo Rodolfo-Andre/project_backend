@@ -10,6 +10,6 @@ namespace project_backend.Models
         public int NumTable { get; set; }
         public int NumSeats { get; set; }
         public string StateTable { get; set; }
-        public List<Commands> ListComand { get; set; }
+        public List<Commands> Commands { get; } = new List<Commands>();
     }
 }

@@ -7,5 +7,8 @@
         public string Phone { get; set; }
         public string Address { get; set; }
         public string Ruc { get; set; }
+
+        public List<Cash> Cashs { get; } = new List<Cash>();
+        public List<Voucher> Vouchers { get; } = new List<Voucher>();
     }
 }

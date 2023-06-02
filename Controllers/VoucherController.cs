@@ -53,7 +53,7 @@ namespace project_backend.Controllers
                 return BadRequest(ModelState);
             }
 
-            Commands command = await _commandService.GetById(voucherCreate.CommandId);
+            Commands command = await _commandService.GetById(voucherCreate.CommandsId);
 
             if (command == null)
             {
@@ -62,7 +62,7 @@ namespace project_backend.Controllers
 
             if (command.StatesCommandId == (int)TypeCommandState.Paid)
             {
-                return BadRequest("El Comando ya fue pagado");
+                return BadRequest("La Comanda ya fue pagada");
             }
 
             TableRestaurant tableRestaurant = await _tableService.GetById(voucherCreate.TableRestaurantId);
@@ -103,12 +103,11 @@ namespace project_backend.Controllers
             }
 
             voucher.EstablishmentId = voucherUpdate.EstablishmentId;
-            voucher.ApertureId = voucherUpdate.ApertureId;
+            voucher.CommandsId = voucherUpdate.CustomerId;
             voucher.VoucherTypeId = voucherUpdate.VoucherTypeId;
-            voucher.UserId = voucherUpdate.UserId;
-            voucher.CustomerName = voucherUpdate.CustomerName;
+            voucher.EmployeeId = voucherUpdate.EmployeeId;
             voucher.DateIssued = voucherUpdate.DateIssued;
-            voucher.NumCom = voucherUpdate.NumCom;
+            voucher.CashId = voucherUpdate.CashId;
             voucher.TotalPrice = voucherUpdate.TotalPrice;
 
             await _voucherService.UpdateVoucher(voucher);

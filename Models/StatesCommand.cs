@@ -5,6 +5,6 @@
         public int Id { get; set; }
         public string State { get; set; }
 
-        public List<Commands> Commands { get; set; }
+        public List<Commands> Commands { get; } = new List<Commands>();
     }
 }

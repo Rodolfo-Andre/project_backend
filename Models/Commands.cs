@@ -13,9 +13,11 @@
         public int StatesCommandId { get; set; }
         public StatesCommand StatesCommand { get; set; }
 
-        public int UserId { get; set; }
-        public User User { get; set; }
+        public Voucher? Voucher { get; set; }
 
-        public List<DetailsComand> DetailsComand { get; set; }
+        public int EmployeeId { get; set; }
+        public Employee Employee { get; set; }
+
+        public List<DetailsComand> DetailsComand { get; } = new List<DetailsComand>();
     }
 }

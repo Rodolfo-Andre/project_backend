@@ -9,7 +9,6 @@ namespace project_backend.Services
     {
         private readonly CommandsContext _context;
 
-
         public CommandService(CommandsContext context)
         {
             _context = context;
@@ -57,7 +56,7 @@ namespace project_backend.Services
         {
             var command = await _context.Commands
                 .Include(c => c.TableRestaurant)
-                .Include(c => c.User).ThenInclude(e => e.Employee)
+                .Include(c => c.Employee)
                 .Include(c => c.StatesCommand)
                 .Include(c => c.DetailsComand).ThenInclude(d => d.Dish).ThenInclude(ca => ca.CategoryDish)
                 .FirstOrDefaultAsync(c => c.Id == id);
@@ -70,7 +69,7 @@ namespace project_backend.Services
         {
             List<Commands> command = await _context.Commands
                 .Include(c => c.TableRestaurant)
-                .Include(c => c.User).ThenInclude(e => e.Employee)
+                .Include(c => c.Employee)
                 .Include(c => c.StatesCommand)
                 .Include(c => c.DetailsComand).ThenInclude(d => d.Dish).ThenInclude(ca => ca.CategoryDish)
                 .ToListAsync();

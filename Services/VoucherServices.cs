@@ -17,22 +17,31 @@ namespace project_backend.Services
         public async Task<List<Voucher>> GetAll()
         {
             return await _context.Voucher
-                .Include(x => x.User)
-                .Include(x => x.Aperture)
+                .Include(x => x.Employee)
+                .Include(x => x.Cash)
+                .Include(x => x.Customer)
                 .Include(x => x.VoucherType)
                 .Include(x => x.Establishment)
                 .Include(x => x.VoucherDetails)
+                .ThenInclude(x => x.PayMethod)
+                .Include(x => x.Commands)
+                .ThenInclude(x => x.DetailsComand)
                 .ToListAsync();
         }
 
         public async Task<Voucher> GetById(int id)
         {
             Voucher voucher = await _context.Voucher
-                .Include(x => x.User)
-                .Include(x => x.Aperture)
+                .Include(x => x.Employee)
+                .Include(x => x.Cash)
+                .Include(x => x.Customer)
                 .Include(x => x.VoucherType)
                 .Include(x => x.Establishment)
                 .Include(x => x.VoucherDetails)
+                .ThenInclude(x => x.PayMethod)
+                .Include(x => x.Commands)
+                .ThenInclude(x => x.DetailsComand)
+                .ThenInclude(x => x.Dish)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             return voucher;

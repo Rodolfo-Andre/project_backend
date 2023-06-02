@@ -4,8 +4,9 @@ namespace project_backend.Enums
 {
     public enum TypeCommandState
     {
-        Paid = 1,
-        UnPaid = 2,
+        Generated = 1,
+        Prepared = 2,
+        Paid = 3,
     }
 
     public enum TypeTableState

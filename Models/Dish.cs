@@ -10,6 +10,8 @@
         public string CategoryDishId { get; set; }
         public CategoryDish CategoryDish { get; set; }
 
+        public List<DetailsComand> DetailsComands { get; } = new List<DetailsComand>();
+
         public static string GenerateId(List<Dish> listDish)
         {
             if (listDish.Count == 0) return "D-001";

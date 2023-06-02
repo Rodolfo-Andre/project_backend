@@ -5,7 +5,7 @@
         public string Id { get; set; }
         public string NameCatDish { get; set; }
 
-        public List<Dish> Dish { get; set; }
+        public List<Dish> Dish { get; } = new List<Dish>();
 
         public static string GenerateId(List<CategoryDish> listCatDish)
         {

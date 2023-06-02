@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using project_backend.Interfaces;
 using project_backend.Models;
 using project_backend.Schemas;
+using System.Security.Claims;
 
 namespace project_backend.Controllers
 {
@@ -97,11 +98,15 @@ namespace project_backend.Controllers
 
                 details.Add(newDetail);
             }
+
+            var identity = User.Identity as ClaimsIdentity;
+            var id = int.Parse(identity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Sid)?.Value);
+
             //Valores adicionales
             newCommand.StatesCommandId = 1;
             newCommand.CantSeats = command.CantSeats;
-            //Rodolfo aquí me carreas pls 
-            newCommand.UserId = 1;
+
+            newCommand.EmployeeId = id;
             await _commandService.CreateCommand(newCommand);
             var getCommand = (await _commandService.GetById(newCommand.Id)).Adapt<CommandGet>();
 

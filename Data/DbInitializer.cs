@@ -39,10 +39,13 @@ namespace project_backend.Data
                 await context.StatesCommand.AddRangeAsync(new List<StatesCommand>
                 {
                     new StatesCommand() {
-                        State = "Generada"
+                        State = "Generado"
+                    },
+                    new StatesCommand() {
+                        State = "Preparado"
                     },
                      new StatesCommand() {
-                        State = "Pagada"
+                        State = "Pagado"
                     },
                 });
 
@@ -52,7 +55,7 @@ namespace project_backend.Data
             {
                 await context.PayMethods.AddRangeAsync(new List<PayMethod>
                 {
-                    new PayMethod() { Paymethod = "Pago en efectivo" },
+                    new PayMethod() { Paymethod = "En efectivo" },
                     new PayMethod() { Paymethod = "BCP" },
                     new PayMethod() { Paymethod = "BBVA" },
                     new PayMethod() { Paymethod = "Scotiabank" },
@@ -60,6 +63,16 @@ namespace project_backend.Data
                 });
 
                 context.SaveChanges();
+            }
+
+            if (!context.Customer.Any())
+            {
+                await context.Customer.AddAsync(new Customer()
+                {
+                    FirstName = "Cliente",
+                    LastName = string.Empty,
+                    Dni = string.Empty
+                }); ;
             }
 
             if (!context.Role.Any())

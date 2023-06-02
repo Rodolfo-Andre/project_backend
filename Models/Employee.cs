@@ -17,6 +17,6 @@ namespace project_backend.Models
 
         public User User { get; set; }
 
-        public List<Aperture> Apertures { get; set; }
+        public List<Voucher> Vouchers { get; } = new List<Voucher>();
     }
 }

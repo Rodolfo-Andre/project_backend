@@ -16,13 +16,13 @@ namespace project_backend.Data
             modelBuilder.Entity<Voucher>(entity =>
             {
                 entity.HasOne(e => e.Establishment)
-               .WithMany()
+               .WithMany(e => e.Vouchers)
                .HasForeignKey(e => e.EstablishmentId)
                .OnDelete(DeleteBehavior.NoAction);
 
-                entity.HasOne(e => e.User)
-                .WithMany()
-                .HasForeignKey(e => e.UserId)
+                entity.HasOne(e => e.Employee)
+                .WithMany(e => e.Vouchers)
+                .HasForeignKey(e => e.EmployeeId)
                 .OnDelete(DeleteBehavior.NoAction);
             });
         }
@@ -30,7 +30,6 @@ namespace project_backend.Data
         public DbSet<Employee> Employee { get; set; } = default!;
         public DbSet<User> User { get; set; } = default!;
         public DbSet<Role> Role { get; set; } = default!;
-        public DbSet<Aperture> Aperture { get; set; }
         public DbSet<Voucher> Voucher { get; set; }
         public DbSet<Dish> Dish { get; set; }
         public DbSet<CategoryDish> CategoryDish { get; set; } = default!;
@@ -43,5 +42,6 @@ namespace project_backend.Data
         public DbSet<PayMethod> PayMethods { get; set; } = default!;
         public DbSet<VoucherType> VoucherType { get; set; } = default!;
         public DbSet<VoucherDetail> VoucherDetail { get; set; } = default!;
+        public DbSet<Customer> Customer { get; set; } = default!;
     }
 }

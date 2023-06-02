@@ -6,21 +6,22 @@ namespace project_backend.Schemas
     public class VoucherPrincipal
     {
         [Required(ErrorMessage = "El campo {0} es requerido")]
-        [StringLength(maximumLength: 30, MinimumLength = 5, ErrorMessage = "El campo {0} debe tener como minimo {2} y como maximo {1} caracteres")]
-        public string CustomerName { get; set; }
-
-        [Required(ErrorMessage = "El campo {0} es requerido")]
         public DateTime DateIssued { get; set; }
 
         [Required(ErrorMessage = "El campo {0} es requerido")]
-        public int NumCom { get; set; }
+        public double TotalPrice { get; set; }
 
         [Required(ErrorMessage = "El campo {0} es requerido")]
-        public double TotalPrice { get; set; }
+        public double Igv { get; set; }
+
+        [Required(ErrorMessage = "El campo {0} es requerido")]
+        public double Discount { get; set; }
+
+        [Required(ErrorMessage = "El campo {0} es requerido")]
+        public double TaxableAmount { get; set; }
     }
 
     public class VoucherCreate : VoucherPrincipal
-
     {
         [Required(ErrorMessage = "El campo {0} es requerido")]
         public int EstablishmentId { get; set; }
@@ -29,13 +30,16 @@ namespace project_backend.Schemas
         public int VoucherTypeId { get; set; }
 
         [Required(ErrorMessage = "El campo {0} es requerido")]
-        public int UserId { get; set; }
+        public int EmployeeId { get; set; }
 
         [Required(ErrorMessage = "El campo {0} es requerido")]
-        public int ApertureId { get; set; }
+        public int CommandsId { get; set; }
 
         [Required(ErrorMessage = "El campo {0} es requerido")]
-        public int CommandId { get; set; }
+        public int CashId { get; set; }
+
+        [Required(ErrorMessage = "El campo {0} es requerido")]
+        public int CustomerId { get; set; }
 
         public int TableRestaurantId { get; set; }
     }
@@ -46,19 +50,16 @@ namespace project_backend.Schemas
         public int Id { get; set; }
     }
 
-    public class VoucherGet
+    public class VoucherGet : VoucherPrincipal
     {
         public int Id { get; set; }
-        public int EstablishmentId { get; set; }
-        public string CustomerName { get; set; }
-        public int VoucherTypeId { get; set; }
-        public DateTime DateIssued { get; set; }
+        public CommandGet Commands { get; set; }
+        public CustomerGet Customer { get; set; }
+        public EstablishmentGet Establishment { get; set; }
+        public VoucherTypeGet VoucherType { get; set; }
+        public EmployeeGet Employee { get; set; }
+        public CashGet Cash { get; set; }
 
-        public int UserId { get; set; }
-        public int NumCom { get; set; }
-        public double TotalPrice { get; set; }
-        public int ApertureId { get; set; }
-
-        public List<VoucherDetail> VoucherDetails { get; set; }
+        public List<VoucherDetailGet> VoucherDetails { get; set; }
     }
 }

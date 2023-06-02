@@ -14,8 +14,4 @@ namespace project_backend.Schemas
     {
         public string Password { get; set; }
     }
-    public class UserComandGet : UserPrincipal
-    {
-        public EmployeGetCommand Employee { get; set; }
-    }
 }

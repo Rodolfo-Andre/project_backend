@@ -6,5 +6,7 @@
 
         public int EstablishmentId { get; set; }
         public Establishment Establishment { get; set; }
+
+        public List<Voucher> Vouchers { get; } = new List<Voucher>();
     }
 }

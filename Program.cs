@@ -5,6 +5,7 @@ using Microsoft.OpenApi.Models;
 using project_backend.Data;
 using project_backend.Interfaces;
 using project_backend.Services;
+using System.Globalization;
 using System.Text;
 using System.Text.Json.Serialization;
 
@@ -25,9 +26,10 @@ builder.Services.AddScoped<IPayMethod, PaymethodService>();
 builder.Services.AddScoped<ICash, CashService>();
 builder.Services.AddScoped<IEstablishment, EstablishmentService>();
 builder.Services.AddScoped<IVoucher, VoucherServices>();
-builder.Services.AddScoped<IAperture, ApertureServices>();
+builder.Services.AddScoped<ICustomer, CustomerService>();
 builder.Services.AddScoped<IVoucherType, VoucherTypeServices>();
 builder.Services.AddScoped<IVoucherDetail, VoucherDetailServices>();
+builder.Services.AddScoped<IReport, ReportService>();
 
 // Add services to the container.
 builder.Services
@@ -46,8 +48,6 @@ builder.Services
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-
-builder.Services.AddTransient<IAperture, ApertureServices>();
 
 // A�adimos informaci�n a Swagger
 builder.Services.AddSwaggerGen(c =>
