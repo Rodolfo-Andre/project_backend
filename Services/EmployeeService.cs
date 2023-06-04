@@ -99,5 +99,16 @@ namespace project_backend.Services
 
             return result;
         }
+
+        public async Task<int> GetNumberCommandsInEmployee(int idEmployee)
+        {
+            var employee = await _context.Employee
+               .Include(c => c.Commands)
+               .Where(c => c.Id == idEmployee)
+               .FirstOrDefaultAsync();
+
+            return employee.Commands.Count;
+
+        }
     }
 }

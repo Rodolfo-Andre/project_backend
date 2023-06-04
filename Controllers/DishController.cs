@@ -119,5 +119,20 @@ namespace project_backend.Controllers
 
             return NoContent();
         }
+
+        [HttpGet("{id}/number-details-commands")]
+        public async Task<ActionResult<int>> GetNumberDetailsCommandsInDish(string id)
+        {
+            var dish = await _dishService.GetById(id);
+
+            if (dish == null)
+            {
+                return NotFound("Plato no encontrado");
+            }
+
+            var count = await _dishService.GetNumberDetailsCommandsInDish(dish.Id);
+
+            return Ok(count);
+        }
     }
 }

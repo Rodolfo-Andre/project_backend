@@ -102,5 +102,20 @@ namespace project_backend.Controllers
 
             return NoContent();
         }
+
+        [HttpGet("{id}/number-commands")]
+        public async Task<ActionResult<int>> GetNumberCommandsInTable(int id)
+        {
+            var table = await _tableService.GetById(id);
+
+            if (table == null)
+            {
+                return NotFound("Mesa no encontrada");
+            }
+
+            var count = await _tableService.GetNumberCommandsInTable(table.NumTable);
+
+            return Ok(count);
+        }
     }
 }

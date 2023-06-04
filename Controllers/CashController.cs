@@ -114,6 +114,21 @@ namespace project_backend.Controllers
 
             return NoContent();
         }
+
+        [HttpGet("{id}/number-voucher")]
+        public async Task<ActionResult<int>> GetNumberVouchersInCash(int id)
+        {
+            var cash = await _cashService.GetById(id);
+
+            if (cash == null)
+            {
+                return NotFound("Caja no encontrada");
+            }
+
+            var count = await _cashService.GetNumberVouchersInCash(cash.Id);
+
+            return Ok(count);
+        }
     }
 }
 

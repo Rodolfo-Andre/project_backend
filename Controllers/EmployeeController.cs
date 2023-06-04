@@ -78,6 +78,7 @@ namespace project_backend.Controllers
             employee.FirstName = employeeUpdate.FirstName;
             employee.LastName = employeeUpdate.LastName;
             employee.Phone = employeeUpdate.Phone;
+            employee.Dni = employeeUpdate.Dni;
             employee.User.Email = employeeUpdate.User.Email;
 
             await _employeeService.UpdateEmployee(employee);
@@ -129,6 +130,21 @@ namespace project_backend.Controllers
             await _employeeService.DeleteEmployee(employee);
 
             return NoContent();
+        }
+
+        [HttpGet("{id}/number-commands")]
+        public async Task<ActionResult<int>> GetNumberCommandsInEmployee(int id)
+        {
+            var employee = await _employeeService.GetById(id);
+
+            if (employee == null)
+            {
+                return NotFound("Empleado no encontrado");
+            }
+
+            var count = await _employeeService.GetNumberCommandsInEmployee(employee.Id);
+
+            return Ok(count);
         }
     }
 }

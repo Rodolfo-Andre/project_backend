@@ -9,5 +9,7 @@ namespace project_backend.Interfaces
         public Task<bool> CreateCash(Cash cash);
         public Task<bool> UpdateCash(Cash cash);
         public Task<bool> DeleteCash(Cash cash);
+        public Task<int> GetNumberVouchersInCash(int idCash);
+
     }
 }

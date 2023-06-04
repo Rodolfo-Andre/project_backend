@@ -9,5 +9,7 @@ namespace project_backend.Interfaces
         public Task<bool> CreateEmployee(Employee employee);
         public Task<bool> UpdateEmployee(Employee employee);
         public Task<bool> DeleteEmployee(Employee employee);
+        public Task<int> GetNumberCommandsInEmployee(int idEmployee);
+
     }
 }

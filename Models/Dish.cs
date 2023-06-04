@@ -4,6 +4,8 @@
     {
         public string Id { get; set; }
         public string NameDish { get; set; }
+
+        [System.ComponentModel.DataAnnotations.Schema.Column(TypeName = "decimal(18,2)")]
         public double PriceDish { get; set; }
         public string ImgDish { get; set; }
 

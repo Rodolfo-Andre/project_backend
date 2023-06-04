@@ -9,5 +9,7 @@ namespace project_backend.Interfaces
         public Task<bool> CreateDish(Dish Dish);
         public Task<bool> DeteleDish(Dish Dish);
         public Task<bool> UpdateDish(Dish Dish);
+        public Task<int> GetNumberDetailsCommandsInDish(String idDish);
+
     }
 }

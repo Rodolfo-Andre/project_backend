@@ -84,5 +84,16 @@ namespace project_backend.Services
 
             return result;
         }
+
+        public async Task<int> GetNumberCommandsInTable(int idTable)
+        {
+            var table = await _context.TableRestaurant
+            .Include(c => c.Commands)
+            .Where(c => c.NumTable == idTable)
+            .FirstOrDefaultAsync();
+
+            return table.Commands.Count;
+        }
+
     }
 }

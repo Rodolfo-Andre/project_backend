@@ -98,5 +98,20 @@ namespace project_backend.Controllers
 
             return NoContent();
         }
+
+        [HttpGet("{id}/number-vouchers-details")]
+        public async Task<ActionResult<int>> GetNumberVouchersDetailsInPayMethod(int id)
+        {
+            var payMethod = await _payMethodService.GetById(id);
+
+            if (payMethod == null)
+            {
+                return NotFound("Método de Pago no encontrado");
+            }
+
+            var count = await _payMethodService.GetNumberVouchersDetailsInPayMethod(payMethod.Id);
+
+            return Ok(count);
+        }
     }
 }

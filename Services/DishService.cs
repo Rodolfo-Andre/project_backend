@@ -92,5 +92,15 @@ namespace project_backend.Services
 
             return result;
         }
+
+        public async Task<int> GetNumberDetailsCommandsInDish(String idDish)
+        {
+            var dish = await _context.Dish
+               .Include(c => c.DetailsComands)
+               .Where(c => c.Id == idDish)
+               .FirstOrDefaultAsync();
+
+            return dish.DetailsComands.Count;
+        }
     }
 }

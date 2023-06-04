@@ -24,8 +24,10 @@ namespace project_backend.Services
                 .Include(x => x.Establishment)
                 .Include(x => x.VoucherDetails)
                 .ThenInclude(x => x.PayMethod)
+                .Include(x => x.Commands.Employee)
                 .Include(x => x.Commands)
                 .ThenInclude(x => x.DetailsComand)
+                .ThenInclude(x => x.Dish)
                 .ToListAsync();
         }
 
@@ -39,6 +41,7 @@ namespace project_backend.Services
                 .Include(x => x.Establishment)
                 .Include(x => x.VoucherDetails)
                 .ThenInclude(x => x.PayMethod)
+                .Include(x => x.Commands.Employee)
                 .Include(x => x.Commands)
                 .ThenInclude(x => x.DetailsComand)
                 .ThenInclude(x => x.Dish)

@@ -39,7 +39,8 @@ namespace project_backend.Services
             parameters.Add("IdVoucher", voucher.Id.ToString());
             parameters.Add("NameCustomer", voucher.Customer.FirstName + " " + voucher.Customer.LastName);
             parameters.Add("DniCustomer", voucher.Customer.Dni);
-            parameters.Add("NameWaiter", voucher.Employee.FirstName + " " + voucher.Employee.LastName);
+            parameters.Add("NameWaiter", voucher.Commands.Employee.FirstName + " " + voucher.Commands.Employee.LastName);
+            parameters.Add("NameCashier", voucher.Employee.FirstName + " " + voucher.Employee.LastName);
             parameters.Add("NumberCash", voucher.CashId.ToString());
             parameters.Add("SubTotal", voucher.Commands.PrecTotOrder.ToString());
             parameters.Add("TaxableAmount", voucher.TaxableAmount.ToString());

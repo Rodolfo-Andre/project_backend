@@ -82,6 +82,16 @@ namespace project_backend.Services
         {
             return await _context.PayMethods.ToListAsync();
         }
+
+        public async Task<int> GetNumberVouchersDetailsInPayMethod(int idPayMethod)
+        {
+            var payMethod = await _context.PayMethods
+               .Include(c => c.VouchersDetails)
+               .Where(c => c.Id == idPayMethod)
+               .FirstOrDefaultAsync();
+
+            return payMethod.VouchersDetails.Count;
+        }
     }
 }
 

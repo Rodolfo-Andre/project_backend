@@ -109,6 +109,7 @@ namespace project_backend.Data
                         FirstName = "Admin",
                         LastName = "Admin",
                         Phone = "999999999",
+                        Dni = "75123512",
                         RoleId = 1,
                         User = new User()
                         {
@@ -120,7 +121,8 @@ namespace project_backend.Data
                     {
                         FirstName = "Mesero",
                         LastName = "Mesero",
-                        Phone = "888888888",
+                        Phone = "999999998",
+                        Dni = "72341264",
                         RoleId = 2,
                         User = new User()
                         {
@@ -132,7 +134,8 @@ namespace project_backend.Data
                     {
                         FirstName = "Cajero",
                         LastName = "Cajero",
-                        Phone = "777777777",
+                        Phone = "999999997",
+                        Dni = "71235912",
                         RoleId = 3,
                         User = new User()
                         {
@@ -144,7 +147,8 @@ namespace project_backend.Data
                     {
                         FirstName = "Cocinero",
                         LastName = "Cocinero",
-                        Phone = "666666666",
+                        Phone = "999999996",
+                        Dni = "64231231",
                         RoleId = 4,
                         User = new User()
                         {
@@ -156,7 +160,8 @@ namespace project_backend.Data
                     {
                         FirstName = "Gerente",
                         LastName = "Gerente",
-                        Phone = "555555555",
+                        Phone = "999999995",
+                        Dni = "85158921",
                         RoleId = 5,
                         User = new User()
                         {

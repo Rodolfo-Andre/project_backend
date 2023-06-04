@@ -7,6 +7,7 @@ namespace project_backend.Models
         public int Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public string Dni { get; set; }
         public string Phone { get; set; }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -16,6 +17,8 @@ namespace project_backend.Models
         public Role Role { get; set; }
 
         public User User { get; set; }
+
+        public List<Commands> Commands { get; } = new List<Commands>();
 
         public List<Voucher> Vouchers { get; } = new List<Voucher>();
     }

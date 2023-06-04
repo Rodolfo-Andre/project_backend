@@ -86,5 +86,15 @@ namespace project_backend.Services
 
             return result;
         }
+
+        public async Task<int> GetNumberVouchersInCash(int idCash)
+        {
+            var cash = await _context.Cash
+               .Include(c => c.Vouchers)
+               .Where(c => c.Id == idCash)
+               .FirstOrDefaultAsync();
+
+            return cash.Vouchers.Count;
+        }
     }
 }

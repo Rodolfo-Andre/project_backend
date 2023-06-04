@@ -9,5 +9,6 @@ namespace project_backend.Interfaces
         public Task<bool> CreateTable(TableRestaurant table);
         public Task<bool> UpdateTable(TableRestaurant table);
         public Task<bool> DeleteTable(TableRestaurant table);
+        public Task<int> GetNumberCommandsInTable(int idTable);
     }
 }
