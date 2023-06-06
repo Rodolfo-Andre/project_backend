@@ -102,7 +102,6 @@ namespace project_backend.Controllers
                 return NotFound("Comprobante de Pago no encontrado");
             }
 
-            voucher.EstablishmentId = voucherUpdate.EstablishmentId;
             voucher.CommandsId = voucherUpdate.CustomerId;
             voucher.VoucherTypeId = voucherUpdate.VoucherTypeId;
             voucher.EmployeeId = voucherUpdate.EmployeeId;

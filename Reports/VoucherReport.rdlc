@@ -1291,8 +1291,8 @@
                   </Textbox>
                 </ReportItems>
                 <KeepTogether>true</KeepTogether>
-                <Top>0.95905cm</Top>
-                <Left>0.0146cm</Left>
+                <Top>0.96739cm</Top>
+                <Left>0.01161cm</Left>
                 <Height>0.56432cm</Height>
                 <Width>5.68133cm</Width>
                 <ZIndex>1</ZIndex>
@@ -1369,7 +1369,8 @@
                   </Textbox>
                 </ReportItems>
                 <KeepTogether>true</KeepTogether>
-                <Top>2.29569cm</Top>
+                <Top>1.64403cm</Top>
+                <Left>0.00448cm</Left>
                 <Height>0.56432cm</Height>
                 <Width>5.69559cm</Width>
                 <ZIndex>2</ZIndex>
@@ -1445,88 +1446,11 @@
                   </Textbox>
                 </ReportItems>
                 <KeepTogether>true</KeepTogether>
-                <Top>2.964cm</Top>
+                <Top>2.32067cm</Top>
                 <Left>0.01161cm</Left>
                 <Height>0.56432cm</Height>
                 <Width>5.68133cm</Width>
                 <ZIndex>3</ZIndex>
-                <Style>
-                  <Border>
-                    <Style>None</Style>
-                  </Border>
-                </Style>
-              </Rectangle>
-              <Rectangle Name="Rectangle4">
-                <ReportItems>
-                  <Textbox Name="Textbox29">
-                    <CanGrow>true</CanGrow>
-                    <KeepTogether>true</KeepTogether>
-                    <Paragraphs>
-                      <Paragraph>
-                        <TextRuns>
-                          <TextRun>
-                            <Value>Gravada:</Value>
-                            <Style>
-                              <FontWeight>Normal</FontWeight>
-                            </Style>
-                          </TextRun>
-                        </TextRuns>
-                        <Style>
-                          <TextAlign>Left</TextAlign>
-                        </Style>
-                      </Paragraph>
-                    </Paragraphs>
-                    <rd:DefaultName>Textbox27</rd:DefaultName>
-                    <Height>0.56432cm</Height>
-                    <Width>2.22914cm</Width>
-                    <Style>
-                      <Border>
-                        <Style>None</Style>
-                      </Border>
-                      <PaddingLeft>2pt</PaddingLeft>
-                      <PaddingRight>2pt</PaddingRight>
-                      <PaddingTop>2pt</PaddingTop>
-                      <PaddingBottom>2pt</PaddingBottom>
-                    </Style>
-                  </Textbox>
-                  <Textbox Name="Textbox31">
-                    <CanGrow>true</CanGrow>
-                    <KeepTogether>true</KeepTogether>
-                    <Paragraphs>
-                      <Paragraph>
-                        <TextRuns>
-                          <TextRun>
-                            <Value>=FormatCurrency(Parameters!TaxableAmount.Value, 2)</Value>
-                            <Style />
-                          </TextRun>
-                        </TextRuns>
-                        <Style>
-                          <TextAlign>Right</TextAlign>
-                        </Style>
-                      </Paragraph>
-                    </Paragraphs>
-                    <rd:DefaultName>Textbox30</rd:DefaultName>
-                    <Left>2.29969cm</Left>
-                    <Height>0.56432cm</Height>
-                    <Width>3.38163cm</Width>
-                    <ZIndex>1</ZIndex>
-                    <Style>
-                      <Border>
-                        <Style>None</Style>
-                      </Border>
-                      <PaddingLeft>2pt</PaddingLeft>
-                      <PaddingRight>2pt</PaddingRight>
-                      <PaddingTop>2pt</PaddingTop>
-                      <PaddingBottom>2pt</PaddingBottom>
-                    </Style>
-                  </Textbox>
-                </ReportItems>
-                <KeepTogether>true</KeepTogether>
-                <Top>1.62737cm</Top>
-                <Left>0.01393cm</Left>
-                <Height>0.56432cm</Height>
-                <Width>5.68132cm</Width>
-                <ZIndex>4</ZIndex>
                 <Style>
                   <Border>
                     <Style>None</Style>
@@ -1599,11 +1523,11 @@
                   </Textbox>
                 </ReportItems>
                 <KeepTogether>true</KeepTogether>
-                <Top>3.63232cm</Top>
-                <Left>0.0136cm</Left>
+                <Top>2.99732cm</Top>
+                <Left>0.01161cm</Left>
                 <Height>0.56432cm</Height>
                 <Width>5.68132cm</Width>
-                <ZIndex>5</ZIndex>
+                <ZIndex>4</ZIndex>
                 <Style>
                   <Border>
                     <Style>None</Style>
@@ -1614,7 +1538,7 @@
             <KeepTogether>true</KeepTogether>
             <Top>6.16872cm</Top>
             <Left>14.23247cm</Left>
-            <Height>4.46713cm</Height>
+            <Height>3.81069cm</Height>
             <Width>5.70455cm</Width>
             <ZIndex>5</ZIndex>
             <Style>
@@ -2071,10 +1995,6 @@
       <DataType>Float</DataType>
       <Prompt>ReportParameter1</Prompt>
     </ReportParameter>
-    <ReportParameter Name="TaxableAmount">
-      <DataType>Float</DataType>
-      <Prompt>ReportParameter1</Prompt>
-    </ReportParameter>
     <ReportParameter Name="Igv">
       <DataType>Float</DataType>
       <Prompt>ReportParameter1</Prompt>
@@ -2144,11 +2064,6 @@
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>2</RowIndex>
           <ParameterName>SubTotal</ParameterName>
-        </CellDefinition>
-        <CellDefinition>
-          <ColumnIndex>1</ColumnIndex>
-          <RowIndex>2</RowIndex>
-          <ParameterName>TaxableAmount</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>2</ColumnIndex>

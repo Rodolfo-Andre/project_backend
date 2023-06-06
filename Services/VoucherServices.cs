@@ -19,9 +19,9 @@ namespace project_backend.Services
             return await _context.Voucher
                 .Include(x => x.Employee)
                 .Include(x => x.Cash)
+                .ThenInclude(x => x.Establishment)
                 .Include(x => x.Customer)
                 .Include(x => x.VoucherType)
-                .Include(x => x.Establishment)
                 .Include(x => x.VoucherDetails)
                 .ThenInclude(x => x.PayMethod)
                 .Include(x => x.Commands.Employee)
@@ -36,9 +36,9 @@ namespace project_backend.Services
             Voucher voucher = await _context.Voucher
                 .Include(x => x.Employee)
                 .Include(x => x.Cash)
+                .ThenInclude(x => x.Establishment)
                 .Include(x => x.Customer)
                 .Include(x => x.VoucherType)
-                .Include(x => x.Establishment)
                 .Include(x => x.VoucherDetails)
                 .ThenInclude(x => x.PayMethod)
                 .Include(x => x.Commands.Employee)

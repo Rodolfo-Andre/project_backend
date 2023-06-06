@@ -1,10 +1,15 @@
-﻿namespace project_backend.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace project_backend.Models
 {
     public class Commands
     {
         public int Id { get; set; }
         public int CantSeats { get; set; }
         public double PrecTotOrder { get; set; }
+
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         //Referencia clases
         public int TableRestaurantId { get; set; }

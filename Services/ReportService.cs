@@ -32,10 +32,10 @@ namespace project_backend.Services
             report.AddDataSource("OrderDetail", orderDetails);
 
             Dictionary<string, string> parameters = new();
-            parameters.Add("NameEstablishment", voucher.Establishment.Name);
-            parameters.Add("AddressEstablishment", voucher.Establishment.Address);
-            parameters.Add("PhoneEstablishment", voucher.Establishment.Phone);
-            parameters.Add("RucEstablishment", voucher.Establishment.Ruc);
+            parameters.Add("NameEstablishment", voucher.Cash.Establishment.Name);
+            parameters.Add("AddressEstablishment", voucher.Cash.Establishment.Address);
+            parameters.Add("PhoneEstablishment", voucher.Cash.Establishment.Phone);
+            parameters.Add("RucEstablishment", voucher.Cash.Establishment.Ruc);
             parameters.Add("IdVoucher", voucher.Id.ToString());
             parameters.Add("NameCustomer", voucher.Customer.FirstName + " " + voucher.Customer.LastName);
             parameters.Add("DniCustomer", voucher.Customer.Dni);
@@ -43,7 +43,6 @@ namespace project_backend.Services
             parameters.Add("NameCashier", voucher.Employee.FirstName + " " + voucher.Employee.LastName);
             parameters.Add("NumberCash", voucher.CashId.ToString());
             parameters.Add("SubTotal", voucher.Commands.PrecTotOrder.ToString());
-            parameters.Add("TaxableAmount", voucher.TaxableAmount.ToString());
             parameters.Add("Igv", voucher.Igv.ToString());
             parameters.Add("TotalDiscount", voucher.Discount.ToString());
             parameters.Add("Total", voucher.TotalPrice.ToString());

@@ -15,11 +15,6 @@ namespace project_backend.Data
         {
             modelBuilder.Entity<Voucher>(entity =>
             {
-                entity.HasOne(e => e.Establishment)
-               .WithMany(e => e.Vouchers)
-               .HasForeignKey(e => e.EstablishmentId)
-               .OnDelete(DeleteBehavior.NoAction);
-
                 entity.HasOne(e => e.Employee)
                 .WithMany(e => e.Vouchers)
                 .HasForeignKey(e => e.EmployeeId)

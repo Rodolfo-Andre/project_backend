@@ -16,15 +16,10 @@ namespace project_backend.Schemas
 
         [Required(ErrorMessage = "El campo {0} es requerido")]
         public double Discount { get; set; }
-
-        [Required(ErrorMessage = "El campo {0} es requerido")]
-        public double TaxableAmount { get; set; }
     }
 
     public class VoucherCreate : VoucherPrincipal
     {
-        [Required(ErrorMessage = "El campo {0} es requerido")]
-        public int EstablishmentId { get; set; }
 
         [Required(ErrorMessage = "El campo {0} es requerido")]
         public int VoucherTypeId { get; set; }
@@ -55,7 +50,6 @@ namespace project_backend.Schemas
         public int Id { get; set; }
         public CommandGet Commands { get; set; }
         public CustomerGet Customer { get; set; }
-        public EstablishmentGet Establishment { get; set; }
         public VoucherTypeGet VoucherType { get; set; }
         public EmployeeGet Employee { get; set; }
         public CashGet Cash { get; set; }

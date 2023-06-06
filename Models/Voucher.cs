@@ -10,16 +10,12 @@ namespace project_backend.Models
         public double TotalPrice { get; set; }
         public double Igv { get; set; }
         public double Discount { get; set; }
-        public double TaxableAmount { get; set; }
 
         public int CommandsId { get; set; }
         public Commands Commands { get; set; }
 
         public int CustomerId { get; set; }
         public Customer Customer { get; set; }
-
-        public int EstablishmentId { get; set; }
-        public Establishment Establishment { get; set; }
 
         public int VoucherTypeId { get; set; }
         public VoucherType VoucherType { get; set; }

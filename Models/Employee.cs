@@ -11,7 +11,7 @@ namespace project_backend.Models
         public string Phone { get; set; }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime IssueDate { get; set; } = DateTime.Now;
 
         public int RoleId { get; set; }
         public Role Role { get; set; }
