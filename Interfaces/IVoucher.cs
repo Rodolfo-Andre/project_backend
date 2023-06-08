@@ -1,4 +1,5 @@
-﻿using project_backend.Models;
+﻿using project_backend.Dto;
+using project_backend.Models;
 
 namespace project_backend.Interfaces
 {
@@ -9,5 +10,6 @@ namespace project_backend.Interfaces
         public Task<bool> CreateVoucher(Voucher voucher);
         public Task<bool> UpdateVoucher(Voucher voucher);
         public Task<bool> DeleteVoucher(Voucher voucher);
+        public Task<List<SalesDataPerDate>> GetSalesDataPerDate();
     }
 }

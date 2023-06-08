@@ -1,6 +1,7 @@
 ﻿using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using project_backend.Dto;
 using project_backend.Interfaces;
 using project_backend.Models;
 using project_backend.Schemas;
@@ -133,6 +134,12 @@ namespace project_backend.Controllers
             var count = await _dishService.GetNumberDetailsCommandsInDish(dish.Id);
 
             return Ok(count);
+        }
+
+        [HttpGet("dish-order-statistics")]
+        public async Task<ActionResult<IEnumerable<DishOrderStatistics>>> GetDishOrderStatistics()
+        {
+            return Ok(await _dishService.GetDishOrderStatistics());
         }
     }
 }

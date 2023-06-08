@@ -1,5 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Mapster;
+using Microsoft.EntityFrameworkCore;
 using project_backend.Data;
+using project_backend.Dto;
 using project_backend.Interfaces;
 using project_backend.Models;
 
@@ -103,6 +105,55 @@ namespace project_backend.Services
             {
                 Console.WriteLine(ex);
             }
+
+            return result;
+        }
+
+        public async Task<List<SalesDataPerDate>> GetSalesDataPerDate()
+        {
+            var query = from v in _context.Voucher
+                        join c in _context.Commands on v.CommandsId equals c.Id
+                        join dc in _context.DetailsComands on c.Id equals dc.CommandsId
+                        join d in _context.Dish on dc.DishId equals d.Id
+                        group new { v, dc } by v.DateIssued into g
+                        orderby g.Sum(x => x.v.TotalPrice) descending
+                        select new
+                        {
+                            DateIssued = g.Key,
+                            AccumulatedSales = g.Sum(x => x.v.TotalPrice),
+                            NumberOfGeneratedReceipts = g.Count(),
+                            QuantityOfDishSales = g.Sum(x => x.dc.CantDish)
+                        };
+
+            var maxQuantityPerDate = from v in _context.Voucher
+                                     join c in _context.Commands on v.CommandsId equals c.Id
+                                     join dc in _context.DetailsComands on c.Id equals dc.CommandsId
+                                     group dc.CantDish by v.DateIssued into g
+                                     select new
+                                     {
+                                         DateIssued = g.Key,
+                                         MaxQuantity = g.Max()
+                                     };
+
+            var query2 = from v in _context.Voucher
+                         join c in _context.Commands on v.CommandsId equals c.Id
+                         join dc in _context.DetailsComands on c.Id equals dc.CommandsId
+                         join d in _context.Dish on dc.DishId equals d.Id
+                         join mq in maxQuantityPerDate on new { v.DateIssued, Quantity = dc.CantDish } equals new { mq.DateIssued, Quantity = mq.MaxQuantity }
+                         select new
+                         {
+                             v.DateIssued,
+                             d.NameDish
+                         };
+
+            var result = await query.Select(x => new SalesDataPerDate
+            {
+                DateIssued = x.DateIssued,
+                AccumulatedSales = x.AccumulatedSales,
+                NumberOfGeneratedReceipts = x.NumberOfGeneratedReceipts,
+                QuantityOfDishSales = x.QuantityOfDishSales,
+                BestSellingDish = query2.First(q => q.DateIssued == x.DateIssued).NameDish
+            }).ToListAsync();
 
             return result;
         }

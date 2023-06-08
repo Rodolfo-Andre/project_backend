@@ -1,5 +1,6 @@
 ﻿using Mapster;
 using Microsoft.AspNetCore.Mvc;
+using project_backend.Dto;
 using project_backend.Enums;
 using project_backend.Interfaces;
 using project_backend.Models;
@@ -129,6 +130,12 @@ namespace project_backend.Controllers
             await _voucherService.DeleteVoucher(voucher);
 
             return NoContent();
+        }
+
+        [HttpGet("sales-data-per-date")]
+        public async Task<ActionResult<IEnumerable<SalesDataPerDate>>> GetSalesDataPerDate()
+        {
+            return Ok(await _voucherService.GetSalesDataPerDate());
         }
     }
 }
