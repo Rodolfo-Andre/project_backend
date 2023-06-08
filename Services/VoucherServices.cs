@@ -117,44 +117,23 @@ namespace project_backend.Services
                         join d in _context.Dish on dc.DishId equals d.Id
                         group new { v, dc } by v.DateIssued into g
                         orderby g.Sum(x => x.v.TotalPrice) descending
-                        select new
+                        select new SalesDataPerDate
                         {
                             DateIssued = g.Key,
                             AccumulatedSales = g.Sum(x => x.v.TotalPrice),
                             NumberOfGeneratedReceipts = g.Count(),
-                            QuantityOfDishSales = g.Sum(x => x.dc.CantDish)
+                            QuantityOfDishSales = g.Sum(x => x.dc.CantDish),
+                            BestSellingDish = (from v2 in _context.Voucher
+                                               join c2 in _context.Commands on v2.CommandsId equals c2.Id
+                                               join dc2 in _context.DetailsComands on c2.Id equals dc2.CommandsId
+                                               join d2 in _context.Dish on dc2.DishId equals d2.Id
+                                               where v2.DateIssued == g.Key
+                                               group dc2 by new { dc2.DishId, d2.NameDish } into g2
+                                               orderby g2.Sum(dc2 => dc2.CantDish) descending
+                                               select g2.Key.NameDish).FirstOrDefault()
                         };
 
-            var maxQuantityPerDate = from v in _context.Voucher
-                                     join c in _context.Commands on v.CommandsId equals c.Id
-                                     join dc in _context.DetailsComands on c.Id equals dc.CommandsId
-                                     group dc.CantDish by v.DateIssued into g
-                                     select new
-                                     {
-                                         DateIssued = g.Key,
-                                         MaxQuantity = g.Max()
-                                     };
-
-            var query2 = from v in _context.Voucher
-                         join c in _context.Commands on v.CommandsId equals c.Id
-                         join dc in _context.DetailsComands on c.Id equals dc.CommandsId
-                         join d in _context.Dish on dc.DishId equals d.Id
-                         join mq in maxQuantityPerDate on new { v.DateIssued, Quantity = dc.CantDish } equals new { mq.DateIssued, Quantity = mq.MaxQuantity }
-                         select new
-                         {
-                             v.DateIssued,
-                             d.NameDish
-                         };
-
-            var result = await query.Select(x => new SalesDataPerDate
-            {
-                DateIssued = x.DateIssued,
-                AccumulatedSales = x.AccumulatedSales,
-                NumberOfGeneratedReceipts = x.NumberOfGeneratedReceipts,
-                QuantityOfDishSales = x.QuantityOfDishSales,
-                BestSellingDish = query2.First(q => q.DateIssued == x.DateIssued).NameDish
-            }).ToListAsync();
-
+            var result = await query.ToListAsync();
             return result;
         }
     }

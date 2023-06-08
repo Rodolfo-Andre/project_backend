@@ -115,19 +115,18 @@ namespace project_backend.Services
                         where c.StatesCommandId == 3
                         group dc by new { dc.DishId, d.NameDish, d.ImgDish, ct.NameCatDish } into g
                         orderby g.Sum(dc => dc.PrecOrder) descending
-                        select new
+                        select new DishOrderStatistics
                         {
-                            g.Key.DishId,
-                            g.Key.NameDish,
-                            g.Key.ImgDish,
-                            g.Key.NameCatDish,
+                            DishId = g.Key.DishId,
+                            NameDish = g.Key.NameDish,
+                            ImgDish = g.Key.ImgDish,
+                            NameCatDish = g.Key.NameCatDish,
                             TotalSales = g.Sum(dc => dc.PrecOrder),
                             QuantityOfDishesSold = g.Sum(dc => dc.CantDish)
                         };
 
             var result = await query.ToListAsync();
-
-            return result.Adapt<List<DishOrderStatistics>>();
+            return result;
         }
     }
 }
