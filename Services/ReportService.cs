@@ -22,8 +22,8 @@ namespace project_backend.Services
                 orderDetails.Add(new OrderDetail
                 {
                     Quantity = dc.CantDish,
-                    Amount = dc.CantDish * dc.PrecOrder,
-                    Price = dc.PrecOrder,
+                    Amount = dc.PrecOrder,
+                    Price = dc.PrecDish,
                     Description = dc.Dish.NameDish
                 });
             });
