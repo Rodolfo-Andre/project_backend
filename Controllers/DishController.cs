@@ -141,5 +141,28 @@ namespace project_backend.Controllers
         {
             return Ok(await _dishService.GetDishOrderStatistics());
         }
+
+
+        [HttpGet("category-dish")]
+        public async Task<ActionResult<IEnumerable<CategoryDishGet>>> GetCategoryDish()
+        {
+            return Ok((await _categoryDishService.GetAll()).Adapt<List<CategoryDishGet>>());
+        }
+
+        [HttpGet("get-dishByIdCategory/{id}")]
+        public async Task<ActionResult<IEnumerable<DishGet>>> GetDishByIdCategory(string id)
+        {
+            var categoryDish = await _categoryDishService.GetById(id);
+            if (categoryDish == null)
+            {
+                return NotFound("Categoría de Plato no encontrada");
+            }
+
+            List<Dish> list = await _dishService.GetAll();
+
+            var dish = list.Where(x => x.CategoryDishId == id).ToList();
+
+            return Ok(dish.Adapt<List<DishGet>>());
+        }
     }
 }

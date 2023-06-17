@@ -23,6 +23,6 @@ namespace project_backend.Models
         public int EmployeeId { get; set; }
         public Employee Employee { get; set; }
 
-        public List<DetailsComand> DetailsComand { get; } = new List<DetailsComand>();
+        public List<DetailsComand> DetailsComand { get; set; } = new List<DetailsComand>();
     }
 }

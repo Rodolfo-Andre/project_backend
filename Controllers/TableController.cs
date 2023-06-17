@@ -7,12 +7,13 @@ using project_backend.Enums;
 using project_backend.Utils;
 using Microsoft.AspNetCore.Authorization;
 using System.Data;
+using project_backend.Dto;
 
 namespace project_backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class TableController : ControllerBase
     {
         private readonly ITableRestaurant _tableService;
@@ -117,5 +118,38 @@ namespace project_backend.Controllers
 
             return Ok(count);
         }
+
+        [HttpGet("table-command")]
+        public async Task<ActionResult<List<TableComands>>> getTablesWithCommands()
+        {
+            var tables = await _tableService.getTablesWithCommands();
+
+            if (tables == null)
+            {
+                return NotFound("Mesa no encontrada");
+            }else if (tables.Count == 0)
+            {
+                return NotFound("No hay Mesas");
+            }
+            return Ok(tables);
+        }
+
+        
+        [HttpGet("table-command/{id}")]
+        public async Task<ActionResult<TableComands>> getTablesWithCommandsByTableId(int id)
+        {
+            var tables = await _tableService.getTablesWithCommandsByTableId(id);
+
+            if (tables == null)
+            {
+                return NotFound("Mesa no encontrada");
+            }else if (tables == null)
+            {
+                return NotFound("No hay Mesas");
+            }
+            return Ok(tables);
+        }
+
+        
     }
 }

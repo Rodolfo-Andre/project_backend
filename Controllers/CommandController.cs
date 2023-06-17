@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using project_backend.Interfaces;
 using project_backend.Models;
+using project_backend.Dto;
+using project_backend.Dto.inputs;
 using project_backend.Schemas;
 using System.Security.Claims;
 
@@ -48,81 +50,110 @@ namespace project_backend.Controllers
             return Ok(commandGet);
         }
 
+
         [HttpPost]
-        public async Task<ActionResult<Commands>> CreateCommand([FromBody] CommandCreate command)
-        {
-            if (!ModelState.IsValid)
+        public async Task<ActionResult> CreateCommand ([FromBody ] CommandInput input){
+            try
             {
-                return BadRequest(ModelState);
-            }
 
-            //Validar mesa
-            var table = await _tableService.GetById(command.TableRestaurantId);
-
-            if (table == null)
-            {
-                return NotFound("Mesa no encontrada");
-            }
-
-            if (table.StateTable == "Ocupado")
-            {
-                return BadRequest("Mesa ocupada, eliga otra");
-            }
-
-            //Creando comanda
-            var newCommand = command.Adapt<Commands>();
-
-            List<DetailsComand> details = new();
-
-            foreach (var item in command.ListDetails)
-            {
-                var dish = await _dishService.GetById(item.DishId);
-
-                DishGet dishGet = dish.Adapt<DishGet>();
-
-                if (dish == null)
-                {
-                    return NotFound($"El plato {item.DishId} no existe");
+                if(!ModelState.IsValid){
+                    return BadRequest(ModelState);
                 }
 
-                newCommand.PrecTotOrder += item.CantDish * dishGet.PriceDish;
+               bool result = await _commandService.CreateCommand(input);
 
-                DetailsComand newDetail = new()
-                {
-                    CantDish = item.CantDish,
-                    PrecDish = dish.PriceDish,
-                    PrecOrder = item.CantDish * dishGet.PriceDish,
-                    Observation = item.Observation,
-                    DishId = item.DishId
-                };
+                if(!result){
+                    return BadRequest("Error al crear la comanda");
+                }
 
-                details.Add(newDetail);
+                return Ok("Comanda creada con exito");
+
+
+                
             }
-
-            var identity = User.Identity as ClaimsIdentity;
-            var id = int.Parse(identity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Sid)?.Value);
-
-            //Valores adicionales
-            newCommand.StatesCommandId = 1;
-            newCommand.CantSeats = command.CantSeats;
-
-            newCommand.EmployeeId = id;
-            await _commandService.CreateCommand(newCommand);
-            var getCommand = (await _commandService.GetById(newCommand.Id)).Adapt<CommandGet>();
-
-            //Actualizar mesa
-            table.StateTable = "Ocupado";
-            await _tableService.UpdateTable(table);
-
-            //Agregamos detalles
-            foreach (var item in details)
+            catch (System.Exception ex)
             {
-                item.CommandsId = newCommand.Id;
-                await _detailsService.CreateDetailCommand(item);
+                    return BadRequest(ex.Message);
             }
-
-            return CreatedAtAction(nameof(GetCommand), new { id = getCommand.Id }, getCommand);
         }
+       
+       
+       
+        // [HttpPost]
+        // public async Task<ActionResult<Commands>> CreateCommand([FromBody] CommandCreate command)
+        // {
+        //     if (!ModelState.IsValid)
+        //     {
+        //         return BadRequest(ModelState);
+        //     }
+
+        //     //Validar mesa
+        //     var table = await _tableService.GetById(command.TableRestaurantId);
+
+        //     if (table == null)
+        //     {
+        //         return NotFound("Mesa no encontrada");
+        //     }
+
+        //     if (table.StateTable == "Ocupado")
+        //     {
+        //         return BadRequest("Mesa ocupada, eliga otra");
+        //     }
+
+        //     //Creando comanda
+        //     var newCommand = command.Adapt<Commands>();
+
+        //     List<DetailsComand> details = new();
+
+        //     foreach (var item in command.ListDetails)
+        //     {
+        //         var dish = await _dishService.GetById(item.DishId);
+
+        //         DishGet dishGet = dish.Adapt<DishGet>();
+
+        //         if (dish == null)
+        //         {
+        //             return NotFound($"El plato {item.DishId} no existe");
+        //         }
+
+        //         newCommand.PrecTotOrder += item.CantDish * dishGet.PriceDish;
+
+        //         DetailsComand newDetail = new()
+        //         {
+        //             CantDish = item.CantDish,
+        //             PrecDish = dish.PriceDish,
+        //             PrecOrder = item.CantDish * dishGet.PriceDish,
+        //             Observation = item.Observation,
+        //             DishId = item.DishId
+        //         };
+
+        //         details.Add(newDetail);
+        //     }
+
+        //     var identity = User.Identity as ClaimsIdentity;
+        //     var id = int.Parse(identity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Sid)?.Value);
+
+        //     //Valores adicionales
+        //     newCommand.StatesCommandId = 1;
+        //     newCommand.CantSeats = command.CantSeats;
+
+        //     newCommand.EmployeeId = id;
+        //     await _commandService.CreateCommand(newCommand);
+        //     var getCommand = (await _commandService.GetById(newCommand.Id)).Adapt<CommandGet>();
+
+        //     //Actualizar mesa
+        //     table.StateTable = "Ocupado";
+        //     await _tableService.UpdateTable(table);
+
+        //     //Agregamos detalles
+        //     foreach (var item in details)
+        //     {
+        //         item.CommandsId = newCommand.Id;
+        //         await _detailsService.CreateDetailCommand(item);
+        //     }
+
+        //     return CreatedAtAction(nameof(GetCommand), new { id = getCommand.Id }, getCommand);
+        // }
 
         [HttpPut("{id}")]
         public async Task<ActionResult<Commands>> UpdateCommand(int id, [FromBody] CommandPrincipal value)
@@ -162,23 +193,40 @@ namespace project_backend.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCommand(int id)
         {
-            var command = await _commandService.GetById(id);
+            // var command = await _commandService.GetById(id);
 
-            if (command == null) { return NotFound("Comanda no encontrada"); }
-            if (command.StatesCommandId == 2) { return BadRequest("La comanda ya fue facturada, no es posible eliminar"); }
-            //Eliminar detalles primero
-            List<DetailsComand> details = await _detailsService.GetByCommandId(command.Id);
-            foreach (var item in details)
-            {
-                await _detailsService.DeleteDetailCommand(item);
-            }
-            //Actualizar mesa
-            var tableUpdate = await _tableService.GetById(command.TableRestaurantId);
-            tableUpdate.StateTable = "Libre";
-            await _tableService.UpdateTable(tableUpdate);
+            // if (command == null) { return NotFound("Comanda no encontrada"); }
+            // if (command.StatesCommandId == 2) { return BadRequest("La comanda ya fue facturada, no es posible eliminar"); }
+            // //Eliminar detalles primero
+            // List<DetailsComand> details = await _detailsService.GetByCommandId(command.Id);
+            // foreach (var item in details)
+            // {
+            //     await _detailsService.DeleteDetailCommand(item);
+            // }
+            // //Actualizar mesa
+            // var tableUpdate = await _tableService.GetById(command.TableRestaurantId);
+            // tableUpdate.StateTable = "Libre";
+            // await _tableService.UpdateTable(tableUpdate);
 
-            await _commandService.DeleteCommand(command);
+            await _commandService.DeleteCommand(id);
             return NoContent();
         }
+    
+
+        [HttpGet("getCommandByTableId/{id}")]
+        public async Task<ActionResult<GetCommandWithTable>> getCommandByTableId(int id)
+        {
+            var command = await _commandService.getCommandByTableId(id);
+
+            if (command == null)
+            {
+                return NotFound("Comanda no encontrada");
+            }
+
+            return Ok(command);
+        }
+
+
+        
     }
 }

@@ -1,4 +1,5 @@
-﻿using project_backend.Models;
+﻿using project_backend.Dto;
+using project_backend.Models;
 
 namespace project_backend.Interfaces
 {
@@ -10,5 +11,9 @@ namespace project_backend.Interfaces
         public Task<bool> UpdateTable(TableRestaurant table);
         public Task<bool> DeleteTable(TableRestaurant table);
         public Task<int> GetNumberCommandsInTable(int idTable);
+        public Task<List<TableComands>> getTablesWithCommands();
+        public Task<TableComands> getTablesWithCommandsByTableId(int id);
+        
+
     }
 }
