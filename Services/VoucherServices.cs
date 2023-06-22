@@ -135,7 +135,7 @@ namespace project_backend.Services
                 
                 await _context.SaveChangesAsync();
                
-                tableComands.StateTable = "Free";
+                tableComands.StateTable = "Libre";
                 
                 await _context.SaveChangesAsync();
 
