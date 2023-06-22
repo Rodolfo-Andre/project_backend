@@ -22,21 +22,22 @@ namespace project_backend.Schemas
     {
 
         [Required(ErrorMessage = "El campo {0} es requerido")]
-        public int VoucherTypeId { get; set; }
+        public int idCommand { get; set; }
 
         [Required(ErrorMessage = "El campo {0} es requerido")]
-        public int EmployeeId { get; set; }
+        public int idTypeVoucher { get; set; }
 
         [Required(ErrorMessage = "El campo {0} es requerido")]
-        public int CommandsId { get; set; }
+        public ClientVOucher cliente { get; set; }
 
         [Required(ErrorMessage = "El campo {0} es requerido")]
         public int CashId { get; set; }
+        public List<DetailPayment> listPayment { get; set; }
+        public double subTotal { get; set; }
+        public double total { get; set; }
+        public int idCash { get; set; }
 
-        [Required(ErrorMessage = "El campo {0} es requerido")]
-        public int CustomerId { get; set; }
-
-        public int TableRestaurantId { get; set; }
+        public int idEmployee { get; set; }
     }
 
     public class VoucherUpdate : VoucherCreate
@@ -55,5 +56,21 @@ namespace project_backend.Schemas
         public CashGet Cash { get; set; }
 
         public List<VoucherDetailGet> VoucherDetails { get; set; }
+    }
+
+
+    public class ClientVOucher
+    {
+        public string name { get; set; }
+        public string lastname { get; set; }
+        public string dni { get; set;}
+    }
+
+
+    public class DetailPayment
+    {
+        public int idTypePayment { get; set; }
+
+        public double amount { get; set; }
     }
 }

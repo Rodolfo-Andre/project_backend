@@ -2,8 +2,11 @@
 using Microsoft.EntityFrameworkCore;
 using project_backend.Data;
 using project_backend.Dto;
+using project_backend.Enums;
 using project_backend.Interfaces;
 using project_backend.Models;
+using project_backend.Schemas;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace project_backend.Services
 {
@@ -52,23 +55,99 @@ namespace project_backend.Services
             return voucher;
         }
 
-        public async Task<bool> CreateVoucher(Voucher voucher)
+        public async Task<bool> CreateVoucher(VoucherCreate v)
         {
-            bool result = false;
-
             try
             {
-                _context.Voucher.Add(voucher);
+                Commands commad = await _context.Commands.FirstOrDefaultAsync(x => x.Id == v.idCommand);
+
+                if (commad == null)
+                {
+                    return false;
+                }
+
+                if (commad.StatesCommandId == (int)TypeCommandState.Paid || commad.StatesCommandId == (int)TypeCommandState.Generated)
+                {
+                    return false;
+                }
+
+                Customer newCustumer = new Customer();
+
+                Customer customer = await _context.Customer.FirstOrDefaultAsync(x => x.Dni == v.cliente.dni);
+
+
+                if (customer == null)
+                {
+                    newCustumer.Dni = v.cliente.dni;
+                    newCustumer.FirstName = v.cliente.name;
+                    newCustumer.LastName = v.cliente.lastname;
+                    
+                }
+
+                Cash cash = await _context.Cash.FirstOrDefaultAsync(x => x.Id == v.idCash);
+
+                if (cash == null)
+                {
+                    return false;
+                }
+
+                TableRestaurant tableComands = await _context.TableRestaurant.FirstOrDefaultAsync(x => x.NumTable == commad.TableRestaurantId);
+
+                if (tableComands == null)
+                {
+                    return false;
+                }
+
+                await _context.Customer.AddAsync(newCustumer);
+                await _context.SaveChangesAsync();
+                Voucher voucher = new Voucher();
+
+                DateTime date = DateTime.Now;
+
+                voucher.CommandsId = v.idCommand;
+                voucher.DateIssued = date;
+                voucher.EmployeeId = commad.EmployeeId;
+                voucher.CashId = v.idCash;
+                voucher.CustomerId = newCustumer.Id;
+                voucher.VoucherTypeId = v.idTypeVoucher;
+                voucher.TotalPrice = v.total;
+                voucher.Igv = v.Igv;
+                voucher.Discount = v.Discount;
+
+
+                await _context.Voucher.AddAsync(voucher);
+
                 await _context.SaveChangesAsync();
 
-                result = true;
+
+                foreach (var item in v.listPayment)
+                {
+                    VoucherDetail voucherDetails = new VoucherDetail();
+                    voucherDetails.VoucherId = voucher.Id;
+                    voucherDetails.PayMethodId = item.idTypePayment;
+                    voucherDetails.PaymentAmount = item.amount;
+                    await _context.VoucherDetail.AddAsync(voucherDetails);
+                }
+
+
+                commad.StatesCommandId = (int)TypeCommandState.Paid;
+
+                
+                await _context.SaveChangesAsync();
+               
+                tableComands.StateTable = "Free";
+                
+                await _context.SaveChangesAsync();
+
+
+                return true;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
             }
 
-            return result;
+            return false;
         }
 
         public async Task<bool> UpdateVoucher(Voucher voucher)

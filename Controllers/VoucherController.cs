@@ -53,39 +53,17 @@ namespace project_backend.Controllers
             {
                 return BadRequest(ModelState);
             }
+ 
 
-            Commands command = await _commandService.GetById(voucherCreate.CommandsId);
+            bool created = await _voucherService.CreateVoucher(voucherCreate);
 
-            if (command == null)
+
+            if (!created)
             {
-                return NotFound("Comprobante de Pago no encontrado");
+                return BadRequest("No se pudo crear el comprobante de pago");
             }
 
-            if (command.StatesCommandId == (int)TypeCommandState.Paid)
-            {
-                return BadRequest("La Comanda ya fue pagada");
-            }
-
-            TableRestaurant tableRestaurant = await _tableService.GetById(voucherCreate.TableRestaurantId);
-
-            if (tableRestaurant == null)
-            {
-                return NotFound("Mesa no encontrada");
-            }
-
-            tableRestaurant.StateTable = TypeTableState.Occupied.ToString();
-            command.StatesCommandId = 1;
-
-            await _commandService.UpdateCommand(command);
-            await _tableService.UpdateTable(tableRestaurant);
-
-            var newVoucher = voucherCreate.Adapt<Voucher>();
-
-            await _voucherService.CreateVoucher(newVoucher);
-
-            var getVoucher = (await _voucherService.GetById(newVoucher.Id)).Adapt<VoucherGet>();
-
-            return CreatedAtAction(nameof(GetVoucher), new { id = getVoucher.Id }, getVoucher);
+            return Ok();
         }
 
         [HttpPut("{id}")]
@@ -103,9 +81,9 @@ namespace project_backend.Controllers
                 return NotFound("Comprobante de Pago no encontrado");
             }
 
-            voucher.CommandsId = voucherUpdate.CustomerId;
-            voucher.VoucherTypeId = voucherUpdate.VoucherTypeId;
-            voucher.EmployeeId = voucherUpdate.EmployeeId;
+            voucher.CommandsId = voucherUpdate.idCommand;
+            voucher.VoucherTypeId = voucherUpdate.idTypeVoucher;
+            voucher.EmployeeId = voucherUpdate.idEmployee;
             voucher.DateIssued = voucherUpdate.DateIssued;
             voucher.CashId = voucherUpdate.CashId;
             voucher.TotalPrice = voucherUpdate.TotalPrice;
