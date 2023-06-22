@@ -63,7 +63,7 @@ namespace project_backend.Controllers
                 return BadRequest("No se pudo crear el comprobante de pago");
             }
 
-            return Ok();
+            return Ok("nuevo");
         }
 
         [HttpPut("{id}")]
