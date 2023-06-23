@@ -52,33 +52,36 @@ namespace project_backend.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult> CreateCommand ([FromBody ] CommandInput input){
+        public async Task<ActionResult> CreateCommand([FromBody] CommandInput input)
+        {
             try
             {
 
-                if(!ModelState.IsValid){
+                if (!ModelState.IsValid)
+                {
                     return BadRequest(ModelState);
                 }
 
-               bool result = await _commandService.CreateCommand(input);
+                bool result = await _commandService.CreateCommand(input);
 
-                if(!result){
+                if (!result)
+                {
                     return BadRequest("Error al crear la comanda");
                 }
 
                 return Ok("Comanda creada con exito");
 
 
-                
+
             }
             catch (System.Exception ex)
             {
-                    return BadRequest(ex.Message);
+                return BadRequest(ex.Message);
             }
         }
-       
-       
-       
+
+
+
         // [HttpPost]
         // public async Task<ActionResult<Commands>> CreateCommand([FromBody] CommandCreate command)
         // {
@@ -190,6 +193,26 @@ namespace project_backend.Controllers
             return Ok(getCommand);
         }
 
+        [HttpPut("Prepare-Command/{id}")]
+        public async Task<ActionResult<Commands>> PrepareCommand(int id)
+        {
+            if (!ModelState.IsValid) { return BadRequest(ModelState); }
+
+            var updateCommand = await _commandService.GetById(id);
+
+            if (updateCommand == null) { return NotFound("Comanda no encontrada"); }
+
+            if (updateCommand.StatesCommandId == 3)
+            {
+                return BadRequest("La comanda ya ha sido facturada, eliga otra");
+            }
+
+            updateCommand.StatesCommandId = 2;
+
+            await _commandService.UpdateCommand(updateCommand);
+            return Ok("Se ha cambiado el estado de comanda correctamente");
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCommand(int id)
         {
@@ -211,7 +234,7 @@ namespace project_backend.Controllers
             await _commandService.DeleteCommand(id);
             return NoContent();
         }
-    
+
 
         [HttpGet("getCommandByTableId/{id}")]
         public async Task<ActionResult<GetCommandWithTable>> getCommandByTableId(int id)
@@ -227,6 +250,6 @@ namespace project_backend.Controllers
         }
 
 
-        
+
     }
 }

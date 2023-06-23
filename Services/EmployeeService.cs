@@ -9,12 +9,14 @@ namespace project_backend.Services
     public class EmployeeService : IEmployee
     {
         private readonly CommandsContext _context;
+        private readonly IEmail _emailService;
         private readonly ILogger<EmployeeService> _logger;
 
-        public EmployeeService(CommandsContext context, ILogger<EmployeeService> logger)
+        public EmployeeService(CommandsContext context, ILogger<EmployeeService> logger, IEmail emailService)
         {
             _context = context;
             _logger = logger;
+            _emailService = emailService;
         }
 
         public async Task<bool> CreateEmployee(Employee employee)
@@ -31,6 +33,8 @@ namespace project_backend.Services
                 _context.Add(employee);
 
                 await _context.SaveChangesAsync();
+
+                _emailService.SendEmail(employee.User.Email, "Bienvenido al sistema de comandas", $"Tu contraseña para acceder a nuestra plataforma es: {passwordGenerated}");
 
                 result = true;
             }
