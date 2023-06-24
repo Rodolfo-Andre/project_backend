@@ -34,7 +34,7 @@ namespace project_backend.Services
 
                 await _context.SaveChangesAsync();
 
-                _emailService.SendEmail(employee.User.Email, "Bienvenido al sistema de comandas", $"Tu contraseña para acceder a nuestra plataforma es: {passwordGenerated}");
+                // _emailService.SendEmail(employee.User.Email, "Bienvenido al sistema de comandas", $"Tu contraseña para acceder a nuestra plataforma es: {passwordGenerated}");
 
                 result = true;
             }
@@ -112,7 +112,26 @@ namespace project_backend.Services
                .FirstOrDefaultAsync();
 
             return employee.Commands.Count;
+        }
 
+        public async Task<bool> IsDniUnique(string dni, int? idEmployee = null)
+        {
+            if (idEmployee != null)
+            {
+                return await _context.Employee.AllAsync(e => e.Dni != dni || e.Id == idEmployee);
+            }
+
+            return await _context.Employee.AllAsync(e => e.Dni != dni);
+        }
+
+        public async Task<bool> IsPhoneUnique(string phone, int? idEmployee = null)
+        {
+            if (idEmployee != null)
+            {
+                return await _context.Employee.AllAsync(e => e.Phone != phone || e.Id == idEmployee);
+            }
+
+            return await _context.Employee.AllAsync(e => e.Phone != phone);
         }
     }
 }
