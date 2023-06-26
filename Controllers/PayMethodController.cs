@@ -1,6 +1,7 @@
 ﻿using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using project_backend.Interfaces;
 using project_backend.Models;
 using project_backend.Schemas;
@@ -49,6 +50,13 @@ namespace project_backend.Controllers
                 return BadRequest(ModelState);
             }
 
+            var IsNotPayMethodUnique = !await _payMethodService.IsPayMethodUnique(payMethod.Paymethod);
+
+            if (IsNotPayMethodUnique)
+            {
+                return Conflict("El nombre de método de pago ya está en uso");
+            }
+
             var newPayMethod = payMethod.Adapt<PayMethod>();
 
             await _payMethodService.CreatePaymethod(newPayMethod);
@@ -72,6 +80,13 @@ namespace project_backend.Controllers
             if (payMethod == null)
             {
                 return NotFound("Método de Pago no encontrado");
+            }
+
+            var IsNotPayMethodUnique = !await _payMethodService.IsPayMethodUnique(payMethodUpdate.Paymethod, payMethod.Id);
+
+            if (IsNotPayMethodUnique)
+            {
+                return Conflict("El nombre de método de pago ya está en uso");
             }
 
             payMethod.Paymethod = payMethodUpdate.Paymethod;

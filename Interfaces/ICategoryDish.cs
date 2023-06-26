@@ -10,5 +10,6 @@ namespace project_backend.Interfaces
         public Task<bool> DeteleCategoryDish(CategoryDish categoryDish);
         public Task<bool> UpdateCategoryDish(CategoryDish categoryDish);
         public Task<int> GetNumberDishInCategoryDish(String idCategoryDish);
+        public Task<bool> IsNameCatDishUnique(string nameCatDish, string idCategoryDish = null);
     }
 }

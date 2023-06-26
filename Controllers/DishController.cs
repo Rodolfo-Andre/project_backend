@@ -164,5 +164,23 @@ namespace project_backend.Controllers
 
             return Ok(dish.Adapt<List<DishGet>>());
         }
+
+        [HttpGet("verify-name/{nameDish}/{idDish?}")]
+        public async Task<ActionResult> VerifyName(string nameDish, string idDish = null)
+        {
+            var IsNotNameDishUnique = !await _dishService.IsNameDishUnique(nameDish);
+
+            if (!string.IsNullOrEmpty(idDish))
+            {
+                IsNotNameDishUnique = !await _dishService.IsNameDishUnique(nameDish, idDish);
+            }
+
+            if (IsNotNameDishUnique)
+            {
+                return Conflict("El nombre de plato ya está en uso");
+            }
+
+            return Ok(new { isFound = IsNotNameDishUnique });
+        }
     }
 }

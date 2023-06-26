@@ -99,5 +99,15 @@ namespace project_backend.Services
 
             return categoryDish.Dish.Count;
         }
+
+        public async Task<bool> IsNameCatDishUnique(string nameCatDish, string idCategoryDish = null)
+        {
+            if (idCategoryDish != null)
+            {
+                return await _context.CategoryDish.AllAsync(e => e.NameCatDish != nameCatDish || e.Id == idCategoryDish);
+            }
+
+            return await _context.CategoryDish.AllAsync(e => e.NameCatDish != nameCatDish);
+        }
     }
 }

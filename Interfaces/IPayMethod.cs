@@ -10,5 +10,6 @@ namespace project_backend.Interfaces
         public Task<bool> UpdatePaymethod(PayMethod payMethod);
         public Task<bool> DeletePaymethod(PayMethod payMethod);
         public Task<int> GetNumberVouchersDetailsInPayMethod(int idPayMethod);
+        public Task<bool> IsPayMethodUnique(string payMethod, int? idPayMethod = null);
     }
 }
