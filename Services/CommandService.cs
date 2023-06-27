@@ -229,6 +229,45 @@ namespace project_backend.Services
             return result;
         }
 
+
+         public async Task<bool> updateStateCommand (int id)
+        {
+            bool result = false;
+
+            try
+            {
+
+                Commands commands = await _context.Commands.FirstOrDefaultAsync(c => c.Id == id);
+
+                if (commands is null)
+                {
+                    return false;
+                }
+
+
+                if (commands.StatesCommandId.Equals(2) || commands.StatesCommandId.Equals(3))
+                {
+                    return false;
+                }
+
+                commands.StatesCommandId = 2;
+                _context.Commands.Update(commands);
+                await _context.SaveChangesAsync();
+                result = true;
+
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+
+
+
+
+
+            return result;
+        }
+
         public async Task<Commands> GetById(int id)
         {
             var command = await _context.Commands

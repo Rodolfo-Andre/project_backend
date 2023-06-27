@@ -76,9 +76,24 @@ namespace project_backend.Controllers
                     return BadRequest(ex.Message);
             }
         }
-       
-       
-       
+        
+        
+        
+        [HttpPut("update-state/{id}")]
+        public async Task<ActionResult<CommandGet>> updateState(int id )
+        {
+            bool command = await _commandService.updateStateCommand(id);
+
+            if (!command)
+            {
+                return NotFound("Se ha enconctrado un error");
+            }
+
+            return Ok();
+        }
+
+
+
         // [HttpPost]
         // public async Task<ActionResult<Commands>> CreateCommand([FromBody] CommandCreate command)
         // {

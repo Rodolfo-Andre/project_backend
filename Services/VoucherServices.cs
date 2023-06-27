@@ -72,17 +72,25 @@ namespace project_backend.Services
                 }
 
                 Customer newCustumer = new Customer();
-
-                Customer customer = await _context.Customer.FirstOrDefaultAsync(x => x.Dni == v.cliente.dni);
-
-
-                if (customer == null)
+                if (string.IsNullOrEmpty(v.cliente.dni) || v.cliente.dni.Length < 8)
                 {
-                    newCustumer.Dni = v.cliente.dni;
-                    newCustumer.FirstName = v.cliente.name;
-                    newCustumer.LastName = v.cliente.lastname;
-                    
+                    newCustumer = await _context.Customer.FirstOrDefaultAsync(x => x.Id == 1);
                 }
+                else
+                {
+                    newCustumer = await _context.Customer.FirstOrDefaultAsync(x => x.Dni == v.cliente.dni);
+
+                    if (newCustumer == null)
+                    {
+                        newCustumer.Dni = v.cliente.dni;
+                        newCustumer.FirstName = v.cliente.name;
+                        newCustumer.LastName = v.cliente.lastname;
+                        await _context.Customer.AddAsync(newCustumer);
+                        await _context.SaveChangesAsync();
+                    }
+                }
+
+
 
                 Cash cash = await _context.Cash.FirstOrDefaultAsync(x => x.Id == v.idCash);
 
@@ -98,11 +106,12 @@ namespace project_backend.Services
                     return false;
                 }
 
-                await _context.Customer.AddAsync(newCustumer);
-                await _context.SaveChangesAsync();
+         
                 Voucher voucher = new Voucher();
 
                 DateTime date = DateTime.Now;
+
+                
 
                 voucher.CommandsId = v.idCommand;
                 voucher.DateIssued = date;
@@ -187,6 +196,8 @@ namespace project_backend.Services
 
             return result;
         }
+
+      
 
         public async Task<List<SalesDataPerDate>> GetSalesDataPerDate()
         {

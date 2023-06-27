@@ -48,6 +48,14 @@ namespace project_backend.Controllers
             return Ok(customer);
         }
 
+        [HttpGet("dni/{id}")]
+        public async Task<ActionResult<CustomerGet>> getCustomerFindByDNI(string id)
+        {
+            var customer = (await _customerService.findCustomerByDNI(id)).Adapt<CustomerGet>();
+            return Ok(customer);
+        }
+
+
         [HttpPost]
         public async Task<ActionResult<CustomerGet>> CreateCustomer([FromBody] CustomerPrincipal customer)
         {

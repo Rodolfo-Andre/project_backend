@@ -178,7 +178,7 @@ namespace project_backend.Services
                         }
 
 
-                        if (command.StatesCommand.Id.Equals(1))
+                        if (command.StatesCommand.Id != 3)
                         {
                             tableComands.commandActive = commandsCustom;
                         }

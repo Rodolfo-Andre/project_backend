@@ -40,6 +40,13 @@ namespace project_backend.Services
             return customer;
         }
 
+        public async Task<Customer> findCustomerByDNI(string id)
+        {
+            var customer = await _context.Customer.FirstOrDefaultAsync(c => c.Dni == id);
+
+            return customer;
+        }
+
         public async Task<Customer> GetFirstOrDefault()
         {
             var customer = await _context.Customer.FirstOrDefaultAsync();

@@ -11,5 +11,6 @@ namespace project_backend.Interfaces
         public Task<bool> DeleteCommand(int id);
         public Task<bool> UpdateCommand(Commands command);
         public  Task<GetCommandWithTable> getCommandByTableId (int id);
+        public  Task<bool> updateStateCommand(int id);
     }
 }
