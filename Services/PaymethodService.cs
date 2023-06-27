@@ -92,6 +92,16 @@ namespace project_backend.Services
 
             return payMethod.VouchersDetails.Count;
         }
+
+        public async Task<bool> IsPayMethodUnique(string payMethod, int? idPayMethod = null)
+        {
+            if (idPayMethod != null)
+            {
+                return await _context.PayMethods.AllAsync(e => e.Paymethod != payMethod || e.Id == idPayMethod);
+            }
+
+            return await _context.PayMethods.AllAsync(e => e.Paymethod != payMethod);
+        }
     }
 }
 

@@ -26,4 +26,9 @@ namespace project_backend.Schemas
     {
         public List<DetailCommandOrder> ListDetails { get; set; }
     }
+
+    public class CommandUpdateState
+    {
+        public int Id { get; set; }
+    }
 }

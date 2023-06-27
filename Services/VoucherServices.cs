@@ -1,12 +1,10 @@
-﻿using Mapster;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using project_backend.Data;
 using project_backend.Dto;
 using project_backend.Enums;
 using project_backend.Interfaces;
 using project_backend.Models;
 using project_backend.Schemas;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace project_backend.Services
 {
@@ -141,11 +139,11 @@ namespace project_backend.Services
 
                 commad.StatesCommandId = (int)TypeCommandState.Paid;
 
-                
+
                 await _context.SaveChangesAsync();
-               
+
                 tableComands.StateTable = "Libre";
-                
+
                 await _context.SaveChangesAsync();
 
 
@@ -205,7 +203,7 @@ namespace project_backend.Services
                         join c in _context.Commands on v.CommandsId equals c.Id
                         join dc in _context.DetailsComands on c.Id equals dc.CommandsId
                         join d in _context.Dish on dc.DishId equals d.Id
-                        group new { v, dc } by v.DateIssued into g
+                        group new { v, dc } by v.DateIssued.Date into g
                         orderby g.Sum(x => x.v.TotalPrice) descending
                         select new SalesDataPerDate
                         {
@@ -217,7 +215,7 @@ namespace project_backend.Services
                                                join c2 in _context.Commands on v2.CommandsId equals c2.Id
                                                join dc2 in _context.DetailsComands on c2.Id equals dc2.CommandsId
                                                join d2 in _context.Dish on dc2.DishId equals d2.Id
-                                               where v2.DateIssued == g.Key
+                                               where v2.DateIssued.Date == g.Key
                                                group dc2 by new { dc2.DishId, d2.NameDish } into g2
                                                orderby g2.Sum(dc2 => dc2.CantDish) descending
                                                select g2.Key.NameDish).FirstOrDefault()

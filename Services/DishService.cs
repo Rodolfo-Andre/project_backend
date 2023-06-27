@@ -128,5 +128,15 @@ namespace project_backend.Services
             var result = await query.ToListAsync();
             return result;
         }
+
+        public async Task<bool> IsNameDishUnique(string nameDish, string idDish = null)
+        {
+            if (idDish != null)
+            {
+                return await _context.Dish.AllAsync(e => e.NameDish != nameDish || e.Id == idDish);
+            }
+
+            return await _context.Dish.AllAsync(e => e.NameDish != nameDish);
+        }
     }
 }

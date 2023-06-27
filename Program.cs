@@ -30,6 +30,7 @@ builder.Services.AddScoped<ICustomer, CustomerService>();
 builder.Services.AddScoped<IVoucherType, VoucherTypeServices>();
 builder.Services.AddScoped<IVoucherDetail, VoucherDetailServices>();
 builder.Services.AddScoped<IReport, ReportService>();
+builder.Services.AddScoped<IEmail, EmailService>();
 
 // Add services to the container.
 builder.Services

@@ -63,6 +63,25 @@ namespace project_backend.Controllers
                 return NotFound("Empleado no encontrado");
             }
 
+            var isNotDniUnique = !await _employeeService.IsDniUnique(employeeUpdate.Dni, employee.Id);
+            var isNotPhoneUnique = !await _employeeService.IsPhoneUnique(employeeUpdate.Phone, employee.Id);
+
+            if (isNotDniUnique && isNotPhoneUnique)
+            {
+                return Conflict("El DNI y teléfono ya está en uso");
+            }
+
+            if (isNotDniUnique)
+            {
+                return Conflict("El DNI ya está en uso");
+            }
+
+            if (isNotPhoneUnique)
+            {
+                return Conflict("El teléfono ya está en uso");
+            }
+
+
             if (employee.RoleId != employeeUpdate.RoleId)
             {
                 var role = await _roleService.GetById(employeeUpdate.RoleId);
@@ -97,6 +116,24 @@ namespace project_backend.Controllers
             if (!ModelState.IsValid) // Validar si el modelo es válido
             {
                 return BadRequest(ModelState); // Devolver un BadRequest con los errores de validación
+            }
+
+            var isNotDniUnique = !await _employeeService.IsDniUnique(employee.Dni);
+            var isNotPhoneUnique = !await _employeeService.IsPhoneUnique(employee.Phone);
+
+            if (isNotDniUnique && isNotPhoneUnique)
+            {
+                return Conflict("El DNI y teléfono ya está en uso");
+            }
+
+            if (isNotDniUnique)
+            {
+                return Conflict("El DNI ya está en uso");
+            }
+
+            if (isNotPhoneUnique)
+            {
+                return Conflict("El teléfono ya está en uso");
             }
 
             var role = await _roleService.GetById(employee.RoleId);

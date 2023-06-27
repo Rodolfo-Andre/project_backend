@@ -12,5 +12,6 @@ namespace project_backend.Interfaces
         public Task<bool> UpdateDish(Dish Dish);
         public Task<int> GetNumberDetailsCommandsInDish(String idDish);
         public Task<List<DishOrderStatistics>> GetDishOrderStatistics();
+        public Task<bool> IsNameDishUnique(string nameDish, string idDish = null);
     }
 }

@@ -56,6 +56,13 @@ namespace project_backend.Controllers
                 return NotFound("Categoría de Plato no encontrada");
             }
 
+            var isNotNameCatDishUnique = !await _categoryDishService.IsNameCatDishUnique(categoryDish.NameCatDish, updateCategoryDish.Id);
+
+            if (isNotNameCatDishUnique)
+            {
+                return Conflict("El nombre de categoría ya está en uso");
+            }
+
             updateCategoryDish.NameCatDish = categoryDish.NameCatDish;
             await _categoryDishService.UpdateCategoryDish(updateCategoryDish);
 
@@ -71,6 +78,13 @@ namespace project_backend.Controllers
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
+            }
+
+            var isNotNameCatDishUnique = !await _categoryDishService.IsNameCatDishUnique(categoryDish.NameCatDish);
+
+            if (isNotNameCatDishUnique)
+            {
+                return Conflict("El nombre de categoría ya está en uso");
             }
 
             var newCategoryDish = categoryDish.Adapt<CategoryDish>();

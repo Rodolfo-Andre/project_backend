@@ -95,7 +95,7 @@ namespace project_backend.Services
                 }
                 else
                 {
-                    Commands commandActiveExist =  _context.Commands.FirstOrDefault(c => c.StatesCommandId == 1 && c.TableRestaurantId == input.numTable);
+                    Commands commandActiveExist = _context.Commands.FirstOrDefault(c => c.StatesCommandId == 1 && c.TableRestaurantId == input.numTable);
 
                     if (commandActiveExist != null)
                     {
@@ -109,7 +109,7 @@ namespace project_backend.Services
                         return false;
                     }
 
-                    Employee  employee = _context.Employee.FirstOrDefault(e => e.Id == input.employeeId);
+                    Employee employee = _context.Employee.FirstOrDefault(e => e.Id == input.employeeId);
                     if (employee == null)
                     {
                         return false;
@@ -178,9 +178,9 @@ namespace project_backend.Services
             try
             {
 
-                
 
-              
+
+
                 Commands command = await _context.Commands
                     .Include(c => c.TableRestaurant)
                     .Include(c => c.Employee)
@@ -195,7 +195,7 @@ namespace project_backend.Services
                     return false;
                 }
 
-                if(command.StatesCommandId.Equals(2) || command.StatesCommandId.Equals(3))
+                if (command.StatesCommandId.Equals(3))
                 {
                     return false;
                 }
@@ -210,7 +210,8 @@ namespace project_backend.Services
                 tableRestaurant.StateTable = "Libre";
 
 
-                if(command.DetailsComand.Any()){
+                if (command.DetailsComand.Any())
+                {
                     _context.DetailsComands.RemoveRange(command.DetailsComand);
                 }
 
@@ -326,9 +327,9 @@ namespace project_backend.Services
 
             if (commandS is null)
             {
-                TableRestaurant  table = await _context.TableRestaurant.FirstOrDefaultAsync(t => t.NumTable == id && t.StateTable.Equals("Libre"));
+                TableRestaurant table = await _context.TableRestaurant.FirstOrDefaultAsync(t => t.NumTable == id && t.StateTable.Equals("Libre"));
 
-                int idd =  _context.Commands.Any() ? _context.Commands.Max(c => c.Id) + 1 : 1;
+                int idd = _context.Commands.Any() ? _context.Commands.Max(c => c.Id) + 1 : 1;
                 if (table != null)
                 {
                     command = new GetCommandWithTable()
@@ -355,8 +356,8 @@ namespace project_backend.Services
                     return null;
                 }
 
-                
-                 
+
+
             };
 
             command.Id = commandS.Id;

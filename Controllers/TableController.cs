@@ -8,6 +8,7 @@ using project_backend.Utils;
 using Microsoft.AspNetCore.Authorization;
 using System.Data;
 using project_backend.Dto;
+using System.Security.Claims;
 
 namespace project_backend.Controllers
 {
@@ -122,19 +123,13 @@ namespace project_backend.Controllers
         [HttpGet("table-command")]
         public async Task<ActionResult<List<TableComands>>> getTablesWithCommands()
         {
-            var tables = await _tableService.getTablesWithCommands();
+            var userRole = User.FindFirstValue(ClaimTypes.Role);
+            var tables = await _tableService.getTablesWithCommands(userRole);
 
-            if (tables == null)
-            {
-                return NotFound("Mesa no encontrada");
-            }else if (tables.Count == 0)
-            {
-                return NotFound("No hay Mesas");
-            }
             return Ok(tables);
         }
 
-        
+
         [HttpGet("table-command/{id}")]
         public async Task<ActionResult<TableComands>> getTablesWithCommandsByTableId(int id)
         {
@@ -143,13 +138,14 @@ namespace project_backend.Controllers
             if (tables == null)
             {
                 return NotFound("Mesa no encontrada");
-            }else if (tables == null)
+            }
+            else if (tables == null)
             {
                 return NotFound("No hay Mesas");
             }
             return Ok(tables);
         }
 
-        
+
     }
 }
