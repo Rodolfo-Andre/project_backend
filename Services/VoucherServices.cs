@@ -80,6 +80,8 @@ namespace project_backend.Services
 
                     if (newCustumer == null)
                     {
+                        newCustumer = new Customer();
+
                         newCustumer.Dni = v.cliente.dni;
                         newCustumer.FirstName = v.cliente.name;
                         newCustumer.LastName = v.cliente.lastname;
