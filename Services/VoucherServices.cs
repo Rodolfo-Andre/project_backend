@@ -106,12 +106,12 @@ namespace project_backend.Services
                     return false;
                 }
 
-         
+
                 Voucher voucher = new Voucher();
 
                 DateTime date = DateTime.Now;
 
-                
+
 
                 voucher.CommandsId = v.idCommand;
                 voucher.DateIssued = date;
@@ -197,7 +197,7 @@ namespace project_backend.Services
             return result;
         }
 
-      
+
 
         public async Task<List<SalesDataPerDate>> GetSalesDataPerDate()
         {
@@ -211,14 +211,14 @@ namespace project_backend.Services
                         {
                             DateIssued = g.Key,
                             AccumulatedSales = g.Sum(x => x.v.TotalPrice),
-                            NumberOfGeneratedReceipts = g.Count(),
+                            NumberOfGeneratedReceipts = g.Select(x => x.v.Id).Distinct().Count(),
                             QuantityOfDishSales = g.Sum(x => x.dc.CantDish),
                             BestSellingDish = (from v2 in _context.Voucher
                                                join c2 in _context.Commands on v2.CommandsId equals c2.Id
                                                join dc2 in _context.DetailsComands on c2.Id equals dc2.CommandsId
                                                join d2 in _context.Dish on dc2.DishId equals d2.Id
                                                where v2.DateIssued.Date == g.Key
-                                               group dc2 by new { dc2.DishId, d2.NameDish } into g2
+                                               group dc2 by new { d2.NameDish } into g2
                                                orderby g2.Sum(dc2 => dc2.CantDish) descending
                                                select g2.Key.NameDish).FirstOrDefault()
                         };
