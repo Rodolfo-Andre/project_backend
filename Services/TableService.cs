@@ -169,7 +169,7 @@ namespace project_backend.Services
 
             foreach (var command in listCommands)
             {
-                if (role == "Cocinero" && command.StatesCommandId != 1)
+                if (role == "Cocinero" && command.StatesCommandId == 3)
                 {
                     continue;
                 }
