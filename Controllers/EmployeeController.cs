@@ -65,10 +65,11 @@ namespace project_backend.Controllers
 
             var isNotDniUnique = !await _employeeService.IsDniUnique(employeeUpdate.Dni, employee.Id);
             var isNotPhoneUnique = !await _employeeService.IsPhoneUnique(employeeUpdate.Phone, employee.Id);
+            var isNotEmailUnique = !await _employeeService.IsEmailUnique(employeeUpdate.User.Email, employee.Id);
 
-            if (isNotDniUnique && isNotPhoneUnique)
+            if (isNotDniUnique && isNotPhoneUnique && isNotEmailUnique)
             {
-                return Conflict("El DNI y teléfono ya está en uso");
+                return Conflict("El DNI, teléfono y correo ya está en uso");
             }
 
             if (isNotDniUnique)
@@ -81,6 +82,10 @@ namespace project_backend.Controllers
                 return Conflict("El teléfono ya está en uso");
             }
 
+            if (isNotEmailUnique)
+            {
+                return Conflict("El email ya está en uso");
+            }
 
             if (employee.RoleId != employeeUpdate.RoleId)
             {
@@ -120,10 +125,12 @@ namespace project_backend.Controllers
 
             var isNotDniUnique = !await _employeeService.IsDniUnique(employee.Dni);
             var isNotPhoneUnique = !await _employeeService.IsPhoneUnique(employee.Phone);
+            var isNotEmailUnique = !await _employeeService.IsEmailUnique(employee.User.Email);
 
-            if (isNotDniUnique && isNotPhoneUnique)
+
+            if (isNotDniUnique && isNotPhoneUnique && isNotEmailUnique)
             {
-                return Conflict("El DNI y teléfono ya está en uso");
+                return Conflict("El DNI, teléfono y correo ya está en uso");
             }
 
             if (isNotDniUnique)
@@ -134,6 +141,11 @@ namespace project_backend.Controllers
             if (isNotPhoneUnique)
             {
                 return Conflict("El teléfono ya está en uso");
+            }
+
+            if (isNotEmailUnique)
+            {
+                return Conflict("El email ya está en uso");
             }
 
             var role = await _roleService.GetById(employee.RoleId);

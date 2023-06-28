@@ -44,7 +44,7 @@ namespace project_backend.Schemas
 
         public RoleGet Role { get; set; }
 
-        public DateTime CreatedAt { get; set; }
+        public DateTime IssueDate { get; set; }
 
         public UserPrincipal User { get; set; }
     }
